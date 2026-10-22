@@ -2,7 +2,7 @@
 [metadata]
 task_id = "SNS002"
 title   = "Validate SnapSendS3 feasibility gates"
-status  = "01-pending-planning"
+status  = "02-planning"
 
 kind = "story"
 [sources]
@@ -17,12 +17,12 @@ child   = []
 
 [workflow]
 defined = "2026-10-22"
-planned = ""
+planned = "2026-10-22"
 implemented = ""
 
 [assignments]
 definition     = ""
-planning       = ""
+planning       = "Sebastian.Szekely@endava.com"
 implementation = ""
 +++
 
