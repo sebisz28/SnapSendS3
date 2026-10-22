@@ -1,5 +1,3 @@
-pending_setup = true
-
 [project]
 name = "dava.flow"
 task_id_prefix = "SNS"
