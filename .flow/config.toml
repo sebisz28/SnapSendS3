@@ -1,0 +1,42 @@
+pending_setup = true
+
+[project]
+name = "dava.flow"
+task_id_prefix = "SNS"
+task_id_format = "001"
+
+[tools]
+[tools.turbine]
+enabled = true
+
+# Sync Profiles
+# Define sync profiles for different tools and integrations.
+# Run 'dft config set-secret' to configure credentials securely.
+#
+# Example JIRA profile:
+# [sync.profiles.jira-main]
+# kind = "jira"
+# url = "https://jira.example.com"
+# project = "PROJ"
+# on-error = "continue"
+# max-retries = 3
+# retry-delay = "30s"
+# token-type = "PAT"
+#
+# [sync.profiles.jira-main.credentials]
+# email = "sync@example.com"
+# key = "JIRA_PAT"
+#
+# [sync.profiles.jira-main.custom_fields]
+# shirt_size = "customfield_16615"
+# story_points = "customfield_23200"
+# epic_link = "customfield_15701"
+#
+# [sync.profiles.jira-main.link_types]
+# # Jira link type names for each relationship type.
+# # Set a value to "" to skip syncing that relationship type.
+# # "Verifies" is a custom link type — create it in your Jira instance first.
+# follows   = "Blocks"    # inward: "is blocked by" — owning task is the blocked one
+# validates = "Verifies"  # inward: "is verified by" — owning task is the checker
+# relates   = "Relates"   # bidirectional — standard Jira link type
+# # contains is not synced as a Jira issue link (uses Jira parent field instead)
