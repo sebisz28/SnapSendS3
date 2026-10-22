@@ -1,0 +1,21 @@
+[skill]
+name = "Risk Documentation"
+slug = "explore.proc.risk-documentation"
+version = "0.2.1"
+description = "Document and track project risks with impact/likelihood scoring and mitigation strategies"
+license = "Proprietary. See LICENSE.md"
+phase = "explore"
+kind = "process"
+
+[skill.roles]
+targets = ["lead", "analyst", "developer", "designer"]
+
+[skill.dependencies]
+requires = [
+  "explore.proc.context-documentation",
+  "explore.proc.hld-drafting",
+]
+
+[skill.certifications]
+tested = []
+
