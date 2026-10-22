@@ -1,0 +1,49 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: snapsends3
+      POSTGRES_USER: snapsends3
+      POSTGRES_PASSWORD: snapsends3
+    ports: ["5432:5432"]
+    volumes: ["postgres-data:/var/lib/postgresql/data"]
+  postgres-e2e:
+    image: postgres:16-alpine
+    profiles: ["e2e"]
+    environment:
+      POSTGRES_DB: snapsends3
+      POSTGRES_USER: snapsends3
+      POSTGRES_PASSWORD: snapsends3
+  clamav:
+    image: clamav/clamav:1.4_base
+    ports: ["3310:3310"]
+  minio:
+    image: localstack/localstack:3.8.1
+    environment:
+      SERVICES: s3
+      AWS_ACCESS_KEY_ID: snapsends3
+      AWS_SECRET_ACCESS_KEY: snapsends3-local-only
+    ports: ["9000:4566"]
+  caddy:
+    image: caddy:2-alpine
+    ports: ["8080:80"]
+    volumes: ["./ops/Caddyfile:/etc/caddy/Caddyfile:ro"]
+  api-e2e:
+    build:
+      context: ./apps/api
+    profiles: ["e2e"]
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-e2e:5432/snapsends3
+      SPRING_DATASOURCE_USERNAME: snapsends3
+      SPRING_DATASOURCE_PASSWORD: snapsends3
+      SNAPSENDS3_R2_ENDPOINT: http://minio:4566
+      SNAPSENDS3_R2_BUCKET: snapsends3
+      SNAPSENDS3_R2_ACCESS_KEY_ID: snapsends3
+      SNAPSENDS3_R2_SECRET_ACCESS_KEY: snapsends3-local-only
+      SNAPSENDS3_CLAMAV_HOST: clamav
+    depends_on:
+      - postgres-e2e
+      - clamav
+      - minio
+volumes:
+  postgres-data:

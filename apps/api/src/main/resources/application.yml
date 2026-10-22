@@ -1,0 +1,30 @@
+spring:
+  application:
+    name: snapsends3-api
+  datasource:
+    url: ${SNAPSENDS3_DATABASE_URL:jdbc:postgresql://localhost:5432/snapsends3}
+    username: ${SNAPSENDS3_DATABASE_USER:snapsends3}
+    password: ${SNAPSENDS3_DATABASE_PASSWORD:snapsends3}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+  flyway:
+    enabled: true
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+snapsends3:
+  storage:
+    endpoint: ${SNAPSENDS3_R2_ENDPOINT:}
+    bucket: ${SNAPSENDS3_R2_BUCKET:}
+    access-key-id: ${SNAPSENDS3_R2_ACCESS_KEY_ID:}
+    secret-access-key: ${SNAPSENDS3_R2_SECRET_ACCESS_KEY:}
+  limits:
+    file-bytes: 104857600
+    share-bytes: 524288000
+  clamav:
+    host: ${SNAPSENDS3_CLAMAV_HOST:clamav}
+    port: ${SNAPSENDS3_CLAMAV_PORT:3310}
+    timeout-seconds: 60

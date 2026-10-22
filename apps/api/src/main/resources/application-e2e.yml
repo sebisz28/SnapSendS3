@@ -1,0 +1,13 @@
+spring:
+  datasource:
+    url: ${SNAPSENDS3_E2E_DATABASE_URL:jdbc:postgresql://localhost:5433/snapsends3}
+    username: snapsends3
+    password: snapsends3
+snapsends3:
+  storage:
+    endpoint: http://localhost:9000
+    bucket: snapsends3
+    access-key-id: snapsends3
+    secret-access-key: snapsends3-local-only
+  clamav:
+    host: localhost

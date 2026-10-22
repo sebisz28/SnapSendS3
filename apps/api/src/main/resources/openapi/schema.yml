@@ -1,0 +1,138 @@
+openapi: 3.0.3
+info:
+  title: SnapSendS3 API
+  version: v1
+paths:
+  /api/health:
+    get:
+      operationId: getHealth
+      tags: [System]
+      summary: Check API health
+      responses:
+        '200':
+          description: API is available
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+  /api/v1/shares:
+    post:
+      operationId: createShare
+      tags: [Shares]
+      summary: Create a six-hour Share
+      parameters:
+        - $ref: '#/components/parameters/senderSubject'
+      responses:
+        '201':
+          description: Share created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShareResponse'
+  /api/v1/shares/{shareId}/files:
+    post:
+      operationId: createUploadIntent
+      tags: [Shares]
+      summary: Create a private upload intent
+      parameters:
+        - $ref: '#/components/parameters/shareId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUploadIntentRequest'
+      responses:
+        '201':
+          description: Upload intent created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UploadIntentResponse'
+  /api/v1/shares/{shareId}/finalization:
+    post:
+      operationId: finalizeShare
+      tags: [Shares]
+      summary: Finalize uploads and queue malware scanning
+      parameters:
+        - $ref: '#/components/parameters/shareId'
+      responses:
+        '200':
+          description: Share is awaiting scan completion
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShareResponse'
+  /api/v1/public/shares/{token}/download:
+    get:
+      operationId: createPublicDownload
+      tags: [PublicShares]
+      summary: Create a short-lived recipient download URL
+      parameters:
+        - name: token
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Download URL created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicDownloadResponse'
+components:
+  parameters:
+    shareId:
+      name: shareId
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+    senderSubject:
+      name: X-Sender-Subject
+      in: header
+      required: false
+      schema:
+        type: string
+        default: local-sender
+  schemas:
+    CreateUploadIntentRequest:
+      type: object
+      required: [fileName, sizeBytes, contentType]
+      properties:
+        fileName: { type: string, maxLength: 512 }
+        sizeBytes: { type: integer, format: int64, minimum: 1 }
+        contentType: { type: string, maxLength: 255 }
+    UploadIntentResponse:
+      type: object
+      required: [fileId, objectKey, uploadUrl]
+      properties:
+        fileId: { type: string, format: uuid }
+        objectKey: { type: string }
+        uploadUrl: { type: string, format: uri }
+    HealthResponse:
+      type: object
+      required: [application, status]
+      properties:
+        application: { type: string }
+        status: { type: string }
+    ShareResponse:
+      type: object
+      required: [id, token, expiresAt, status]
+      properties:
+        id:
+          type: string
+          format: uuid
+        token:
+          type: string
+        expiresAt:
+          type: string
+          format: date-time
+        status:
+          type: string
+          enum: [UPLOADING, SCANNING, ARCHIVING, READY, REJECTED, EXPIRED]
+    PublicDownloadResponse:
+      type: object
+      required: [downloadUrl, expiresAt]
+      properties:
+        downloadUrl: { type: string, format: uri }
+        expiresAt: { type: string, format: date-time }
