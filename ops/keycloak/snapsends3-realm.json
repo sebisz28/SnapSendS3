@@ -1,0 +1,20 @@
+{
+  "realm": "snapsends3",
+  "enabled": true,
+  "roles": { "realm": [{ "name": "dava.sender" }] },
+  "clients": [{
+    "clientId": "snapsends3-web",
+    "enabled": true,
+    "publicClient": true,
+    "standardFlowEnabled": true,
+    "redirectUris": ["https://localhost:8443/*"],
+    "webOrigins": ["https://localhost:8443"],
+    "protocolMappers": [{
+      "name": "sender-roles",
+      "protocol": "openid-connect",
+      "protocolMapper": "oidc-usermodel-realm-role-mapper",
+      "config": { "multivalued": "true", "claim.name": "roles", "jsonType.label": "String", "access.token.claim": "true", "id.token.claim": "true", "userinfo.token.claim": "true" }
+    }]
+  }],
+  "users": [{ "username": "sender", "enabled": true, "email": "sender@local.test", "emailVerified": true, "firstName": "Demo", "lastName": "Sender", "credentials": [{ "type": "password", "value": "sender", "temporary": false }], "realmRoles": ["dava.sender"] }]
+}

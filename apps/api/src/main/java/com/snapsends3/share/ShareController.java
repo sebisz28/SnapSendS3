@@ -1,6 +1,7 @@
 package com.snapsends3.share;
 
 import com.snapsends3.openapi.api.SharesApi;
+import com.snapsends3.openapi.model.CreateShareRequest;
 import com.snapsends3.openapi.model.CreateUploadIntentRequest;
 import com.snapsends3.openapi.model.ShareResponse;
 import com.snapsends3.openapi.model.UploadIntentResponse;
@@ -13,16 +14,22 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 class ShareController implements SharesApi {
     private final ShareService shares;
+    private final SenderIdentity sender;
 
     @Override
-    public ResponseEntity<ShareResponse> createShare(String senderSubject) {
-        return ResponseEntity.status(201).body(toResponse(shares.create(senderSubject)));
+    public ResponseEntity<ShareResponse> createShare(CreateShareRequest request) {
+        return ResponseEntity.status(201).body(toResponse(shares.create(sender.subject(), request.getPassword())));
+    }
+
+    @Override
+    public ResponseEntity<ShareResponse> getShare(UUID shareId) {
+        return ResponseEntity.ok(toResponse(shares.getForSender(shareId, sender.subject())));
     }
 
     @Override
     public ResponseEntity<UploadIntentResponse> createUploadIntent(UUID shareId, CreateUploadIntentRequest request) {
         ShareService.UploadIntent intent = shares.createUploadIntent(
-                shareId, request.getFileName(), request.getSizeBytes(), request.getContentType());
+                shareId, sender.subject(), request.getFileName(), request.getSizeBytes(), request.getContentType());
         return ResponseEntity.status(201).body(new UploadIntentResponse()
                 .fileId(intent.file().getId())
                 .objectKey(intent.file().getObjectKey())
@@ -31,7 +38,7 @@ class ShareController implements SharesApi {
 
     @Override
     public ResponseEntity<ShareResponse> finalizeShare(UUID shareId) {
-        return ResponseEntity.ok(toResponse(shares.finalizeShare(shareId)));
+        return ResponseEntity.ok(toResponse(shares.finalizeShare(shareId, sender.subject())));
     }
 
     private ShareResponse toResponse(Share share) {
@@ -39,6 +46,7 @@ class ShareController implements SharesApi {
                 .id(share.getId())
                 .token(share.getToken())
                 .expiresAt(share.getExpiresAt().atOffset(java.time.ZoneOffset.UTC))
-                .status(ShareResponse.StatusEnum.valueOf(share.getStatus().name()));
+                .status(ShareResponse.StatusEnum.valueOf(share.getStatus().name()))
+                .storageWarning(shares.storageWarning());
     }
 }

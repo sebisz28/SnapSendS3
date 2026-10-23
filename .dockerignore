@@ -1,0 +1,11 @@
+.git
+apps/web/node_modules
+apps/web/dist
+apps/web/.angular
+apps/api/target
+**/*-status.out
+**/*-status.err
+compose-up.out
+compose-up.err
+caddy-build.out
+caddy-build.err

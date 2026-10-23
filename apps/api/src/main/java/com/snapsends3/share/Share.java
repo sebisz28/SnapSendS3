@@ -36,10 +36,18 @@ class Share {
     @Column
     private String archiveObjectKey;
 
+    @Column(name = "password_hash", length = 255, updatable = false)
+    private String passwordHash;
+
     Share(String token, String senderSubject, Instant expiresAt) {
+        this(token, senderSubject, expiresAt, null);
+    }
+
+    Share(String token, String senderSubject, Instant expiresAt, String passwordHash) {
         this.token = token;
         this.senderSubject = senderSubject;
         this.expiresAt = expiresAt;
+        this.passwordHash = passwordHash;
         this.status = ShareStatus.UPLOADING;
     }
 
@@ -64,5 +72,9 @@ class Share {
 
     void reject() {
         this.status = ShareStatus.REJECTED;
+    }
+
+    void expire() {
+        this.status = ShareStatus.EXPIRED;
     }
 }

@@ -10,6 +10,12 @@ spring:
       ddl-auto: validate
   flyway:
     enabled: true
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${SNAPSENDS3_KEYCLOAK_ISSUER_URI:http://localhost:8180/auth/realms/snapsends3}
+          jwk-set-uri: ${SNAPSENDS3_KEYCLOAK_JWK_SET_URI:http://localhost:8180/auth/realms/snapsends3/protocol/openid-connect/certs}
 management:
   endpoints:
     web:
@@ -24,6 +30,8 @@ snapsends3:
   limits:
     file-bytes: 104857600
     share-bytes: 524288000
+    storage-bytes: ${SNAPSENDS3_STORAGE_BUDGET_BYTES:5368709120}
+    storage-warning-percent: 80
   clamav:
     host: ${SNAPSENDS3_CLAMAV_HOST:clamav}
     port: ${SNAPSENDS3_CLAMAV_PORT:3310}

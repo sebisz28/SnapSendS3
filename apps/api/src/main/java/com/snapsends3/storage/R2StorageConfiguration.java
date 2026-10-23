@@ -64,6 +64,11 @@ class R2StorageConfiguration {
                 throw unavailable();
             }
 
+            @Override
+            public void delete(String objectKey) {
+                throw unavailable();
+            }
+
             private ResponseStatusException unavailable() {
                 return new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "Object storage is not configured");
             }
