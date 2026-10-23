@@ -139,10 +139,30 @@ class ShareServiceTest {
 
     @Test
     void preservesPublicDownloadAuthorizationResponses() {
-        // Given: unready, expired, and password-protected shares
-        // When: a recipient requests a public download URL
-        // Then: the existing 409, 410, and 401 results are returned
-        fail("Test skeleton - not implemented");
+        ShareRepository repository = Mockito.mock(ShareRepository.class);
+        ShareFileRepository files = Mockito.mock(ShareFileRepository.class);
+        Share unready = new Share("unready", "sender", Instant.parse("2026-10-22T00:00:00Z"));
+        Share expired = new Share("expired", "sender", Instant.parse("2026-10-20T00:00:00Z"));
+        Share protectedShare = new Share("protected", "sender", Instant.parse("2026-10-22T00:00:00Z"),
+                SharePasswordHasher.hash("password1"));
+        protectedShare.finalizeUploads();
+        protectedShare.markReady("shares/share-id/file");
+        when(repository.findByToken("unready")).thenReturn(Optional.of(unready));
+        when(repository.findByToken("expired")).thenReturn(Optional.of(expired));
+        when(repository.findByToken("protected")).thenReturn(Optional.of(protectedShare));
+        ShareService service = new ShareService(repository, files, Mockito.mock(ObjectStorage.class),
+                Mockito.mock(ShareScanWorker.class), Clock.fixed(Instant.parse("2026-10-21T00:00:00Z"), ZoneOffset.UTC),
+                limits(Long.MAX_VALUE), Mockito.mock(DownloadAttemptRepository.class));
+
+        assertThatThrownBy(() -> service.createPublicDownload("unready"))
+                .extracting(error -> ((ResponseStatusException) error).getStatusCode())
+                .isEqualTo(HttpStatus.CONFLICT);
+        assertThatThrownBy(() -> service.createPublicDownload("expired"))
+                .extracting(error -> ((ResponseStatusException) error).getStatusCode())
+                .isEqualTo(HttpStatus.GONE);
+        assertThatThrownBy(() -> service.createPublicDownload("protected"))
+                .extracting(error -> ((ResponseStatusException) error).getStatusCode())
+                .isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
     @Test
