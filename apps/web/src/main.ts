@@ -95,6 +95,7 @@ class AppComponent {
   recipientWorking = false;
   canRetryRecipient = false;
   accessToken = sessionStorage.getItem('snapsends3.access-token') ?? '';
+  refreshToken = sessionStorage.getItem('snapsends3.refresh-token') ?? '';
   authWorking = false;
 
   constructor() {
@@ -217,7 +218,9 @@ class AppComponent {
 
   signOut(): void {
     sessionStorage.removeItem('snapsends3.access-token');
+    sessionStorage.removeItem('snapsends3.refresh-token');
     this.accessToken = '';
+    this.refreshToken = '';
     location.assign(location.pathname);
   }
 
@@ -278,8 +281,7 @@ class AppComponent {
       const body = new URLSearchParams({ grant_type: 'authorization_code', client_id: this.clientId, code, redirect_uri: location.origin + location.pathname, code_verifier: sessionStorage.getItem('snapsends3.pkce-verifier') ?? '' });
       const response = await fetch(`${this.issuer}/protocol/openid-connect/token`, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body });
       if (!response.ok) throw new Error('Sign-in could not be completed. Please try again.');
-      this.accessToken = (await response.json()).access_token;
-      sessionStorage.setItem('snapsends3.access-token', this.accessToken);
+      this.storeTokens(await response.json());
       location.replace(location.pathname);
     } catch (cause) {
       this.error = cause instanceof Error ? cause.message : 'Sign-in could not be completed. Please try again.';
@@ -300,8 +302,13 @@ class AppComponent {
 
   private async request<T = unknown>(url: string, init: RequestInit = {}): Promise<T> {
     const headers = new Headers(init.headers);
-    if (url.startsWith('/api/v1/shares') && this.accessToken) headers.set('Authorization', `Bearer ${this.accessToken}`);
-    const response = await fetch(url, { ...init, headers });
+    const senderRequest = url.startsWith('/api/v1/shares');
+    if (senderRequest && this.accessToken) headers.set('Authorization', `Bearer ${this.accessToken}`);
+    let response = await fetch(url, { ...init, headers });
+    if (senderRequest && response.status === 401 && await this.refreshAccessToken()) {
+      headers.set('Authorization', `Bearer ${this.accessToken}`);
+      response = await fetch(url, { ...init, headers });
+    }
     if (!response.ok) {
       let detail = '';
       try { detail = (await response.json()).detail ?? ''; } catch { /* Use the status fallback. */ }
@@ -320,6 +327,31 @@ class AppComponent {
 
   private base64Url(bytes: Uint8Array): string {
     return btoa(String.fromCharCode(...bytes)).replaceAll('+', '-').replaceAll('/', '_').replaceAll('=', '');
+  }
+
+  private async refreshAccessToken(): Promise<boolean> {
+    if (!this.refreshToken) return false;
+    try {
+      const body = new URLSearchParams({ grant_type: 'refresh_token', client_id: this.clientId, refresh_token: this.refreshToken });
+      const response = await fetch(`${this.issuer}/protocol/openid-connect/token`, {
+        method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body,
+      });
+      if (!response.ok) return false;
+      this.storeTokens(await response.json());
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  private storeTokens(tokens: { access_token?: string; refresh_token?: string }): void {
+    if (!tokens.access_token) throw new Error('Sign-in did not return an access token.');
+    this.accessToken = tokens.access_token;
+    sessionStorage.setItem('snapsends3.access-token', this.accessToken);
+    if (tokens.refresh_token) {
+      this.refreshToken = tokens.refresh_token;
+      sessionStorage.setItem('snapsends3.refresh-token', this.refreshToken);
+    }
   }
 }
 
