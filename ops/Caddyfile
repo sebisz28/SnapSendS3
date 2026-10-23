@@ -6,6 +6,9 @@ https://localhost {
   handle /auth/* {
     reverse_proxy keycloak:8080
   }
+  handle /snapsends3/* {
+    reverse_proxy minio:4566
+  }
   handle {
     root * /srv
     try_files {path} /index.html

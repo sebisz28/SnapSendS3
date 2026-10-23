@@ -280,7 +280,7 @@ class AppComponent {
       if (!response.ok) throw new Error('Sign-in could not be completed. Please try again.');
       this.accessToken = (await response.json()).access_token;
       sessionStorage.setItem('snapsends3.access-token', this.accessToken);
-      history.replaceState({}, '', location.pathname);
+      location.replace(location.pathname);
     } catch (cause) {
       this.error = cause instanceof Error ? cause.message : 'Sign-in could not be completed. Please try again.';
     } finally {

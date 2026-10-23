@@ -27,7 +27,8 @@ class R2StorageConfiguration {
                 .pathStyleAccessEnabled(true)
                 .build();
         S3Presigner presigner = S3Presigner.builder()
-                .endpointOverride(URI.create(properties.getEndpoint()))
+                .endpointOverride(URI.create(properties.getPublicEndpoint() == null || properties.getPublicEndpoint().isBlank()
+                        ? properties.getEndpoint() : properties.getPublicEndpoint()))
                 .region(Region.of("auto"))
                 .serviceConfiguration(serviceConfiguration)
                 .credentialsProvider(credentials)

@@ -40,6 +40,7 @@ services:
       SPRING_DATASOURCE_USERNAME: snapsends3
       SPRING_DATASOURCE_PASSWORD: snapsends3
       SNAPSENDS3_R2_ENDPOINT: http://minio:4566
+      SNAPSENDS3_R2_PUBLIC_ENDPOINT: https://localhost:8443
       SNAPSENDS3_R2_BUCKET: snapsends3
       SNAPSENDS3_R2_ACCESS_KEY_ID: snapsends3
       SNAPSENDS3_R2_SECRET_ACCESS_KEY: snapsends3-local-only
@@ -60,6 +61,7 @@ services:
       SPRING_DATASOURCE_USERNAME: snapsends3
       SPRING_DATASOURCE_PASSWORD: snapsends3
       SNAPSENDS3_R2_ENDPOINT: http://minio:4566
+      SNAPSENDS3_R2_PUBLIC_ENDPOINT: https://localhost:8443
       SNAPSENDS3_R2_BUCKET: snapsends3
       SNAPSENDS3_R2_ACCESS_KEY_ID: snapsends3
       SNAPSENDS3_R2_SECRET_ACCESS_KEY: snapsends3-local-only

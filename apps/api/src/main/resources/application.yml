@@ -24,6 +24,7 @@ management:
 snapsends3:
   storage:
     endpoint: ${SNAPSENDS3_R2_ENDPOINT:}
+    public-endpoint: ${SNAPSENDS3_R2_PUBLIC_ENDPOINT:}
     bucket: ${SNAPSENDS3_R2_BUCKET:}
     access-key-id: ${SNAPSENDS3_R2_ACCESS_KEY_ID:}
     secret-access-key: ${SNAPSENDS3_R2_SECRET_ACCESS_KEY:}

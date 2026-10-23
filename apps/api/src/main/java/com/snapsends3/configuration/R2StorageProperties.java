@@ -9,6 +9,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "snapsends3.storage")
 public class R2StorageProperties {
     private String endpoint;
+    private String publicEndpoint;
     private String bucket;
     private String accessKeyId;
     private String secretAccessKey;
