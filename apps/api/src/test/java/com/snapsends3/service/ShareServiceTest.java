@@ -2,6 +2,7 @@ package com.snapsends3.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
@@ -112,6 +113,22 @@ class ShareServiceTest {
                 .createPublicDownload("token");
 
         verify(storage).createDownloadUrl("shares/share-id/object-id", "photo.png");
+    }
+
+    @Test
+    void namesMultiFileDownloadsAsZipArchive() {
+        // Given: a ready share with two uploaded files
+        // When: a recipient requests its public download URL
+        // Then: object storage receives the ZIP archive name
+        fail("Test skeleton - not implemented");
+    }
+
+    @Test
+    void preservesPublicDownloadAuthorizationResponses() {
+        // Given: unready, expired, and password-protected shares
+        // When: a recipient requests a public download URL
+        // Then: the existing 409, 410, and 401 results are returned
+        fail("Test skeleton - not implemented");
     }
 
     @Test
