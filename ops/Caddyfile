@@ -1,5 +1,4 @@
-https://localhost {
-  tls internal
+https://{$SNAPSENDS3_PUBLIC_HOST:localhost} {
   handle /api/* {
     reverse_proxy api:8080
   }

@@ -7,8 +7,8 @@
     "enabled": true,
     "publicClient": true,
     "standardFlowEnabled": true,
-    "redirectUris": ["https://localhost:8443/*"],
-    "webOrigins": ["https://localhost:8443"],
+    "redirectUris": ["${SNAPSENDS3_PUBLIC_ORIGIN}/*"],
+    "webOrigins": ["${SNAPSENDS3_PUBLIC_ORIGIN}"],
     "protocolMappers": [{
       "name": "sender-roles",
       "protocol": "openid-connect",
