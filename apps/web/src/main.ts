@@ -1,6 +1,6 @@
 import 'zone.js';
 import { bootstrapApplication } from '@angular/platform-browser';
-import { Component } from '@angular/core';
+import { ChangeDetectorRef, Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 type ShareResponse = { id: string; token: string; expiresAt: string; status: string; storageWarning?: string };
@@ -98,7 +98,7 @@ class AppComponent {
   refreshToken = sessionStorage.getItem('snapsends3.refresh-token') ?? '';
   authWorking = false;
 
-  constructor() {
+  constructor(private readonly changeDetector: ChangeDetectorRef) {
     void this.finishSignIn();
     if (this.recipientToken) void this.loadRecipientDownload(this.recipientToken);
   }
@@ -192,6 +192,7 @@ class AppComponent {
       this.message = '';
     } finally {
       this.working = false;
+      this.changeDetector.detectChanges();
     }
   }
 
