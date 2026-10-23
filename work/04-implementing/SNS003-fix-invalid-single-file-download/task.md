@@ -2,7 +2,7 @@
 [metadata]
 task_id = "SNS003"
 title   = "Fix invalid single-file download"
-status  = "03-pending-implementation"
+status  = "04-implementing"
 
 kind = "bug"
 [sources]
@@ -23,12 +23,12 @@ child   = []
 [workflow]
 defined = "2026-10-23"
 planned = "2026-10-23"
-implemented = ""
+implemented = "2026-10-23"
 
 [assignments]
 definition     = ""
 planning       = "Codex"
-implementation = ""
+implementation = "Sebastian.Szekely@endava.com"
 +++
 
 # Task: Fix invalid single-file download
