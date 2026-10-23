@@ -57,7 +57,7 @@ class R2StorageConfiguration {
             }
 
             @Override
-            public URI createDownloadUrl(String objectKey) {
+            public URI createDownloadUrl(String objectKey, String downloadFileName) {
                 throw unavailable();
             }
 

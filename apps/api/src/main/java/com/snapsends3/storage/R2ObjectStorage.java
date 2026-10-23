@@ -46,13 +46,14 @@ public class R2ObjectStorage implements ObjectStorage {
     }
 
     @Override
-    public URI createDownloadUrl(String objectKey) {
+    public URI createDownloadUrl(String objectKey, String downloadFileName) {
+        String safeFileName = downloadFileName.replaceAll("[\\r\\n\\\"]", "_");
         PresignedGetObjectRequest request = presigner.presignGetObject(GetObjectPresignRequest.builder()
                 .signatureDuration(UPLOAD_URL_TTL)
                 .getObjectRequest(GetObjectRequest.builder()
                         .bucket(properties.getBucket())
                         .key(objectKey)
-                        .responseContentDisposition("attachment; filename=\"snapsends3-share.zip\"")
+                        .responseContentDisposition("attachment; filename=\"" + safeFileName + "\"")
                         .build())
                 .build());
         return URI.create(request.url().toString());

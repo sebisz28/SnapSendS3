@@ -7,7 +7,7 @@ https://localhost {
     reverse_proxy keycloak:8080
   }
   handle /snapsends3/* {
-    header Content-Disposition "attachment; filename=\"snapsends3-share.zip\""
+    header Content-Disposition "{query.response-content-disposition}"
     reverse_proxy minio:4566
   }
   handle {

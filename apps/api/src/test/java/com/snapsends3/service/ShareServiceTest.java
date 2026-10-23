@@ -4,14 +4,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
 
 import com.snapsends3.configuration.ShareLimitProperties;
 import com.snapsends3.entity.Share;
+import com.snapsends3.entity.ShareFile;
 import com.snapsends3.entity.ShareStatus;
 import com.snapsends3.repository.DownloadAttemptRepository;
 import com.snapsends3.repository.ShareFileRepository;
 import com.snapsends3.repository.ShareRepository;
 import com.snapsends3.storage.ObjectStorage;
+import java.net.URI;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneOffset;
@@ -89,6 +92,26 @@ class ShareServiceTest {
                 .createUploadIntent(shareId, "sender", "packing-list.pdf", 10, "application/pdf"))
                 .isInstanceOf(ResponseStatusException.class)
                 .hasMessageContaining("Share no longer accepts uploads");
+    }
+
+    @Test
+    void namesSingleFileDownloadsAfterTheOriginalFile() {
+        ShareRepository repository = Mockito.mock(ShareRepository.class);
+        ShareFileRepository files = Mockito.mock(ShareFileRepository.class);
+        ObjectStorage storage = Mockito.mock(ObjectStorage.class);
+        DownloadAttemptRepository attempts = Mockito.mock(DownloadAttemptRepository.class);
+        Share share = new Share("token", "sender", Instant.parse("2026-10-22T00:00:00Z"));
+        share.finalizeUploads();
+        share.markReady("shares/share-id/object-id");
+        when(repository.findByToken("token")).thenReturn(Optional.of(share));
+        when(files.findByShareId(share.getId())).thenReturn(java.util.List.of(new ShareFile(share, "photo.png", 10, "shares/share-id/object-id")));
+        when(storage.createDownloadUrl(any(), any())).thenReturn(URI.create("https://storage.example/download"));
+
+        new ShareService(repository, files, storage, Mockito.mock(ShareScanWorker.class),
+                Clock.fixed(Instant.parse("2026-10-21T00:00:00Z"), ZoneOffset.UTC), limits(Long.MAX_VALUE), attempts)
+                .createPublicDownload("token");
+
+        verify(storage).createDownloadUrl("shares/share-id/object-id", "photo.png");
     }
 
     @Test

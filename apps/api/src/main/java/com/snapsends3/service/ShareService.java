@@ -114,7 +114,9 @@ public class ShareService {
             recordDownloadAttempt(share, DownloadAttemptOutcome.PASSWORD_FAILED, now);
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Password required or incorrect");
         }
-        var downloadUrl = objectStorage.createDownloadUrl(share.getArchiveObjectKey());
+        var files = shareFiles.findByShareId(share.getId());
+        String downloadFileName = files.size() == 1 ? files.getFirst().getOriginalName() : "snapsends3-share.zip";
+        var downloadUrl = objectStorage.createDownloadUrl(share.getArchiveObjectKey(), downloadFileName);
         recordDownloadAttempt(share, DownloadAttemptOutcome.ALLOWED, now);
         return new PublicDownload(downloadUrl, share.getExpiresAt());
     }

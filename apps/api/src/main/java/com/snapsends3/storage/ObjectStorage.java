@@ -9,7 +9,7 @@ public interface ObjectStorage {
 
     InputStream openForScan(String objectKey);
 
-    URI createDownloadUrl(String objectKey);
+    URI createDownloadUrl(String objectKey, String downloadFileName);
 
     void putArchive(String objectKey, Path archive);
 
