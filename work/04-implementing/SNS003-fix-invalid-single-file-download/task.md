@@ -34,10 +34,10 @@ implementation = "Sebastian.Szekely@endava.com"
 # Task: Fix invalid single-file download
 
 **Task ID**: SNS003
-**Status**: 02-planning
+**Status**: 04-implementing
 **Phase**: govern
 **Date**: 2026-10-23
-**Branch**: plan/SNS003-fix-invalid-single-file-download
+**Branch**: impl/SNS003-fix-invalid-single-file-download
 
 ## Problem Statement
 
