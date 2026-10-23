@@ -2,7 +2,7 @@
 
 ## Problem Statement
 
-For a share containing one file, the recipient download endpoint returns the original object bytes. The current client and proxy label that response as `snapsends3-share.zip`, so Windows treats a PNG, PDF, or other original file as a ZIP archive and reports that the archive is invalid. The desired result is for a single-file share to download the original file using its original filename and media type; multi-file shares remain a valid ZIP archive. This prevents recipients from receiving unusable downloads in the local `https://localhost:8443` flow.
+For a share containing one file, the recipient download endpoint returns the original object bytes. A prior local download was labelled as `snapsends3-share.zip`, so Windows treated a source file as an archive and rejected it. The codebase now contains the intended name-selection and attachment-header behavior, but it lacks complete regression and browser-visible verification. The desired result is evidence that a one-file share downloads the original file and a multi-file share remains a valid ZIP in the local `https://localhost:8443` flow.
 
 ## Stakeholders
 

@@ -2,7 +2,7 @@
 
 ## Overview
 
-One-file shares keep the uploaded source object as their ready download object. The recipient response can therefore contain a PNG, PDF, or other source bytes, while the old delivery metadata labelled it as `snapsends3-share.zip`. Windows correctly rejects that file as an invalid archive. This task makes each delivery name match the ready object: the original upload name for one file and `snapsends3-share.zip` for multiple files.
+One-file shares keep the uploaded source object as their ready download object. A prior recipient response was labelled as `snapsends3-share.zip`, so Windows correctly rejected source-file bytes as an invalid archive. Commit `0b14333` already implements the intended delivery names and attachment metadata. This task supplies the missing regression and browser-visible integration evidence that the existing behavior works locally.
 
 The scope is local Compose usage through `https://localhost:8443`. It retains private, short-lived object storage URLs, scan gating, password checks, and expiry enforcement.
 
@@ -16,12 +16,12 @@ The scope is local Compose usage through `https://localhost:8443`. It retains pr
 
 ## Technical Decisions
 
-1. One-file shares remain raw source objects. `ShareCompletionService` already marks that object ready; do not archive it.
-2. `ShareService.createPublicDownload` chooses the delivery filename after authorization:
+1. One-file shares remain raw source objects. `ShareCompletionService` already marks that object ready; verify it through the recipient flow.
+2. `ShareService.createPublicDownload` already chooses the delivery filename after authorization:
    - exactly one `ShareFile`: `ShareFile.originalName`
    - otherwise: `snapsends3-share.zip`
-3. `ObjectStorage.createDownloadUrl` accepts that filename. `R2ObjectStorage` signs `response-content-disposition` as an attachment, after replacing CR, LF, and quotes in the name.
-4. Caddy maps the signed disposition query value to its response `Content-Disposition` header for `/snapsends3/*`, preserving behavior when LocalStack does not honor the S3 response override.
+3. `ObjectStorage.createDownloadUrl` already accepts that filename. `R2ObjectStorage` signs `response-content-disposition` as an attachment after replacing CR, LF, and quotes in the name; add adapter coverage.
+4. Caddy already maps the signed disposition query value to its response `Content-Disposition` header for `/snapsends3/*`; verify it with LocalStack.
 5. The Angular recipient view remains a normal anchor to the short-lived URL. The attachment header causes the browser to save the file with the correct name.
 
 ## Architecture
@@ -44,12 +44,11 @@ graph LR
 - Add the corresponding multi-file assertion for `snapsends3-share.zip`.
 - Add an adapter-level test, where practical, for filename sanitization and signed attachment disposition.
 
-### 2. Apply delivery metadata changes
+### 2. Add targeted storage and proxy regression coverage
 
-- Update `apps/api/src/main/java/com/snapsends3/storage/ObjectStorage.java` only if its download URL contract does not already carry the delivery name.
-- Update `apps/api/src/main/java/com/snapsends3/service/ShareService.java` to select the name based on file count after ready, expiry, and password checks.
-- Update `apps/api/src/main/java/com/snapsends3/storage/R2ObjectStorage.java` to sign attachment disposition safely.
-- Update `ops/Caddyfile` only if the LocalStack proxy does not already emit the signed response disposition.
+- Add `apps/api/src/test/java/com/snapsends3/service/ShareServiceTest.java` coverage for multi-file ZIP naming and existing authorization statuses.
+- Add `apps/api/src/test/java/com/snapsends3/storage/R2ObjectStorageTest.java` coverage for signed attachment disposition and sanitized filenames.
+- Keep `apps/api/src/main/java/com/snapsends3/service/ShareService.java`, `apps/api/src/main/java/com/snapsends3/storage/R2ObjectStorage.java`, and `ops/Caddyfile` unchanged unless a failing test identifies a defect.
 
 ### 3. Verify the full local flow
 
@@ -91,5 +90,5 @@ graph LR
 
 ## Completion Evidence
 
-- API test suite passes.
+- API test suite passes with the new regression tests.
 - Fresh one-file and multi-file downloads pass content and archive validation through `https://localhost:8443`.

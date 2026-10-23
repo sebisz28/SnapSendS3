@@ -2,7 +2,7 @@
 
 ## High-Level Strategy
 
-Keep the existing direct, signed object-storage download model. Determine the response filename from the number of files attached to a ready share, add it to the presigned GET request as an attachment disposition, and ensure Caddy returns that signed disposition when the local S3 emulator does not.
+Keep the existing direct, signed object-storage download model. Verify the existing filename selection, presigned attachment disposition, and Caddy response-header mapping with targeted automated and local integration tests.
 
 ## Architecture Decisions
 
@@ -27,13 +27,13 @@ Keep the existing direct, signed object-storage download model. Determine the re
 
 ### API / storage
 
-- [ ] Keep `ObjectStorage.createDownloadUrl(String objectKey, String downloadFileName)` as the adapter contract.
-- [ ] Test single-file name selection and multi-file ZIP name selection in `ShareServiceTest`.
-- [ ] Test signed URL query construction and header injection at an integration level where practical.
+- [ ] Add a multi-file ZIP-name case to `ShareServiceTest` alongside the existing one-file case.
+- [ ] Add `R2ObjectStorageTest` to assert attachment disposition and CR/LF/quote sanitization in the signed GET request.
+- [ ] Verify the existing signed URL query construction and Caddy header injection through the local stack.
 
 ### Caddy
 
-- [ ] Retain the `/snapsends3/*` response-header mapping for `response-content-disposition`.
+- [ ] Verify the existing `/snapsends3/*` response-header mapping for `response-content-disposition`.
 - [ ] Verify the browser-visible endpoint returns the intended attachment filename.
 
 ### Web application

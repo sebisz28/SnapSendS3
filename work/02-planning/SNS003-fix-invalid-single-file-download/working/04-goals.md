@@ -2,9 +2,9 @@
 
 ## Measurable Goals
 
-- [ ] A one-file share downloads one valid file with the uploaded filename; verify its content signature matches the uploaded file and Windows opens it normally.
-- [ ] A multi-file share downloads a valid `snapsends3-share.zip`; verify the archive opens and contains every uploaded file.
-- [ ] Recipient responses use `Content-Disposition: attachment`; verify the browser saves the file rather than rendering it inline.
+- [ ] Add executable regression tests for one-file and multi-file name selection and storage disposition sanitization.
+- [ ] Verify fresh local one-file and multi-file responses through Caddy for headers, bytes, and ZIP integrity.
+- [ ] Record the verification procedure so the local `localhost` flow is reproducible.
 
 ## Constraints
 

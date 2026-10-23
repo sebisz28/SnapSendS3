@@ -7,10 +7,10 @@
 - [ ] Add or complete unit tests for one-file original-name and multi-file ZIP-name selection.
 - [ ] Add a regression test for sanitized filename handling.
 
-### Phase 2: Delivery Metadata
+### Phase 2: Local Delivery Verification
 
-- [ ] Ensure the storage adapter signs attachment content disposition with the selected filename.
-- [ ] Ensure Caddy returns the signed response disposition for LocalStack-backed downloads.
+- [ ] Verify the storage adapter signs attachment content disposition with the selected filename.
+- [ ] Verify Caddy returns the signed response disposition for LocalStack-backed downloads.
 
 ### Phase 3: Integration Verification
 

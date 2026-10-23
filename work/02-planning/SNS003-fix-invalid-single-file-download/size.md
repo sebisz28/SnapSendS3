@@ -4,8 +4,8 @@
 
 ### Technical Complexity
 
-- **Analysis Scope**: API service, storage adapter, Caddy proxy, and local Compose verification.
-- **Estimated File Count**: 4–6 implementation and test files.
+- **Analysis Scope**: Existing API service, storage adapter, Caddy proxy, and local Compose verification.
+- **Estimated File Count**: 2–4 regression-test and verification files.
 - **Cross-References**: 4 architecture and decision documents.
 - **Integration Points**: Browser, Caddy, LocalStack, and the S3 presigner.
 
@@ -15,19 +15,19 @@
 
 | Axis | Score (0-3) | Rationale |
 |---|---:|---|
-| Scope / Surface Area | 2 | Changes span service, storage adapter, proxy configuration, and tests. |
-| Coupling / Interfaces | 1 | The storage adapter carries a filename parameter; no public API schema changes. |
+| Scope / Surface Area | 1 | Work adds coverage around existing service, storage, and proxy behavior. |
+| Coupling / Interfaces | 0 | No interface change is planned. |
 | Novelty / Uncertainty | 1 | Signed response headers and proxy behavior are established patterns but LocalStack parity must be verified. |
 | Dependencies | 1 | Existing LocalStack and Caddy environment is required. |
 | Testing & Verification | 2 | Unit tests plus browser-visible integration verification are required. |
 | Risk / Blast Radius | 2 | Recipient delivery is a core path and headers must remain safe. |
 
-### Total Complexity Score: 9/18
+### Total Complexity Score: 7/18
 
 ### Size Estimate
 
-- **Shirt Size**: M
-- **Time Estimate**: 1–2 weeks
+- **Shirt Size**: S
+- **Time Estimate**: 3–5 days
 - **Confidence**: Medium
 
 ## Dependencies and Risk Factors

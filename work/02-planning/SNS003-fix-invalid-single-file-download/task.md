@@ -34,27 +34,27 @@ implementation = ""
 # Task: Fix invalid single-file download
 
 **Task ID**: SNS003
-**Status**: 01-pending-planning
+**Status**: 02-planning
 **Phase**: govern
 **Date**: 2026-10-23
 **Branch**: plan/SNS003-fix-invalid-single-file-download
 
 ## Problem Statement
 
-Single-file shares currently download raw source bytes while being presented as a ZIP archive. Windows rejects the resulting file as invalid. A recipient must receive one uploaded file under its original filename, while a multi-file share must remain a valid ZIP archive.
+The codebase already selects an original name for a one-file share and a ZIP name for a multi-file share, but the local end-to-end behavior has not been proven. Windows previously rejected a download named as a ZIP because it contained source-file bytes. This task adds the missing regression and local integration evidence so recipients receive valid downloads.
 
 ## Goals & Acceptance Criteria
 
 ### Goals
 
-- Deliver a valid, saved download for both one-file and multi-file shares.
+- Prove a valid, saved download for both one-file and multi-file shares.
 - Preserve the private, short-lived download-grant model.
 
 ### Acceptance Criteria
 
-- [ ] A recipient downloading a one-file share receives the uploaded filename and valid original bytes.
-- [ ] A recipient downloading a multi-file share receives a valid `snapsends3-share.zip` archive containing all uploaded files.
-- [ ] The download response uses attachment behavior and does not render the file inline.
+- [ ] Regression tests cover original-name selection for one-file shares and ZIP-name selection for multi-file shares.
+- [ ] Storage adapter tests cover an attachment disposition and safe filename sanitization.
+- [ ] Local Compose verification proves browser-visible attachment headers, original bytes, and valid ZIP integrity.
 - [ ] Expiry, password, and scan-gate controls continue to apply before a download URL is issued.
 
 ## Non-Goals

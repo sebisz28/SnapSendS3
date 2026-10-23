@@ -34,5 +34,5 @@
 
 | Conflict/Gap | Description | Resolution |
 |---|---|---|
-| Filename/header mismatch | The storage object is a raw source file for one-file shares while its delivery can be labelled as a ZIP. | Resolve response headers from the ready-share shape: original filename for one file, ZIP name for multiple files. |
-| LocalStack response behavior | LocalStack may ignore S3 response-header query overrides. | Verify the Caddy proxy translates the signed query override into `Content-Disposition` and test the live header. |
+| Missing test coverage | Existing code selects the correct delivery names, but only the one-file service behavior is covered. | Add multi-file, adapter sanitization, and local integration evidence. |
+| LocalStack response behavior | LocalStack may ignore S3 response-header query overrides. | Verify the existing Caddy proxy translates the signed query override into `Content-Disposition` and test the live header. |
