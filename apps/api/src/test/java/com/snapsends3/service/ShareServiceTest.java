@@ -117,10 +117,24 @@ class ShareServiceTest {
 
     @Test
     void namesMultiFileDownloadsAsZipArchive() {
-        // Given: a ready share with two uploaded files
-        // When: a recipient requests its public download URL
-        // Then: object storage receives the ZIP archive name
-        fail("Test skeleton - not implemented");
+        ShareRepository repository = Mockito.mock(ShareRepository.class);
+        ShareFileRepository files = Mockito.mock(ShareFileRepository.class);
+        ObjectStorage storage = Mockito.mock(ObjectStorage.class);
+        DownloadAttemptRepository attempts = Mockito.mock(DownloadAttemptRepository.class);
+        Share share = new Share("token", "sender", Instant.parse("2026-10-22T00:00:00Z"));
+        share.finalizeUploads();
+        share.markReady("shares/share-id/download.zip");
+        when(repository.findByToken("token")).thenReturn(Optional.of(share));
+        when(files.findByShareId(share.getId())).thenReturn(java.util.List.of(
+                new ShareFile(share, "photo.png", 10, "shares/share-id/photo"),
+                new ShareFile(share, "notes.txt", 10, "shares/share-id/notes")));
+        when(storage.createDownloadUrl(any(), any())).thenReturn(URI.create("https://storage.example/download"));
+
+        new ShareService(repository, files, storage, Mockito.mock(ShareScanWorker.class),
+                Clock.fixed(Instant.parse("2026-10-21T00:00:00Z"), ZoneOffset.UTC), limits(Long.MAX_VALUE), attempts)
+                .createPublicDownload("token");
+
+        verify(storage).createDownloadUrl("shares/share-id/download.zip", "snapsends3-share.zip");
     }
 
     @Test
