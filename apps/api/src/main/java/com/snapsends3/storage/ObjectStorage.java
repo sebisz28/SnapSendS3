@@ -12,4 +12,6 @@ public interface ObjectStorage {
     URI createDownloadUrl(String objectKey);
 
     void putArchive(String objectKey, Path archive);
+
+    void delete(String objectKey);
 }

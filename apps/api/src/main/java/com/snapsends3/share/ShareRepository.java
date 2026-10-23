@@ -6,4 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 interface ShareRepository extends JpaRepository<Share, UUID> {
     Optional<Share> findByToken(String token);
+
+    java.util.List<Share> findTop100ByExpiresAtLessThanEqual(java.time.Instant expiresAt);
 }

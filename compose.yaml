@@ -24,10 +24,33 @@ services:
       AWS_ACCESS_KEY_ID: snapsends3
       AWS_SECRET_ACCESS_KEY: snapsends3-local-only
     ports: ["9000:4566"]
+    volumes: ["./ops/localstack:/etc/localstack/init/ready.d:ro"]
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.0
+    command: start-dev --import-realm --http-relative-path=/auth --hostname=https://localhost:8443/auth --proxy-headers=xforwarded
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${SNAPSENDS3_KEYCLOAK_ADMIN_USERNAME:-admin}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${SNAPSENDS3_KEYCLOAK_ADMIN_PASSWORD:-admin}
+    ports: ["8180:8080"]
+    volumes: ["./ops/keycloak:/opt/keycloak/data/import:ro"]
+  api:
+    build: ./apps/api
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/snapsends3
+      SPRING_DATASOURCE_USERNAME: snapsends3
+      SPRING_DATASOURCE_PASSWORD: snapsends3
+      SNAPSENDS3_R2_ENDPOINT: http://minio:4566
+      SNAPSENDS3_R2_BUCKET: snapsends3
+      SNAPSENDS3_R2_ACCESS_KEY_ID: snapsends3
+      SNAPSENDS3_R2_SECRET_ACCESS_KEY: snapsends3-local-only
+      SNAPSENDS3_CLAMAV_HOST: clamav
+      SNAPSENDS3_KEYCLOAK_ISSUER_URI: https://localhost:8443/auth/realms/snapsends3
+      SNAPSENDS3_KEYCLOAK_JWK_SET_URI: http://keycloak:8080/auth/realms/snapsends3/protocol/openid-connect/certs
+    depends_on: [postgres, clamav, minio, keycloak]
   caddy:
-    image: caddy:2-alpine
-    ports: ["8080:80"]
-    volumes: ["./ops/Caddyfile:/etc/caddy/Caddyfile:ro"]
+    build: .
+    ports: ["8443:443"]
+    depends_on: [api, keycloak]
   api-e2e:
     build:
       context: ./apps/api
@@ -41,9 +64,12 @@ services:
       SNAPSENDS3_R2_ACCESS_KEY_ID: snapsends3
       SNAPSENDS3_R2_SECRET_ACCESS_KEY: snapsends3-local-only
       SNAPSENDS3_CLAMAV_HOST: clamav
+      SNAPSENDS3_KEYCLOAK_ISSUER_URI: https://localhost:8443/auth/realms/snapsends3
+      SNAPSENDS3_KEYCLOAK_JWK_SET_URI: http://keycloak:8080/auth/realms/snapsends3/protocol/openid-connect/certs
     depends_on:
       - postgres-e2e
       - clamav
       - minio
+      - keycloak
 volumes:
   postgres-data:

@@ -15,4 +15,9 @@ interface ShareFileRepository extends JpaRepository<ShareFile, UUID> {
 
     @Query("select coalesce(sum(file.sizeBytes), 0) from ShareFile file where file.share.id = :shareId")
     long totalSizeByShareId(UUID shareId);
+
+    @Query("select coalesce(sum(file.sizeBytes), 0) from ShareFile file")
+    long totalSize();
+
+    long deleteByShareId(UUID shareId);
 }

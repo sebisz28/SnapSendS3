@@ -20,11 +20,29 @@ paths:
       operationId: createShare
       tags: [Shares]
       summary: Create a six-hour Share
-      parameters:
-        - $ref: '#/components/parameters/senderSubject'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateShareRequest'
       responses:
         '201':
           description: Share created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShareResponse'
+  /api/v1/shares/{shareId}:
+    get:
+      operationId: getShare
+      tags: [Shares]
+      summary: Get the current Share status for its Sender
+      parameters:
+        - $ref: '#/components/parameters/shareId'
+      responses:
+        '200':
+          description: Current Share status
           content:
             application/json:
               schema:
@@ -64,7 +82,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ShareResponse'
   /api/v1/public/shares/{token}/download:
-    get:
+    post:
       operationId: createPublicDownload
       tags: [PublicShares]
       summary: Create a short-lived recipient download URL
@@ -73,6 +91,12 @@ paths:
           in: path
           required: true
           schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePublicDownloadRequest'
       responses:
         '200':
           description: Download URL created
@@ -87,14 +111,23 @@ components:
       in: path
       required: true
       schema: { type: string, format: uuid }
-    senderSubject:
-      name: X-Sender-Subject
-      in: header
-      required: false
-      schema:
-        type: string
-        default: local-sender
   schemas:
+    CreateShareRequest:
+      type: object
+      properties:
+        password:
+          type: string
+          minLength: 8
+          maxLength: 128
+          description: Optional password used to protect recipient access.
+    CreatePublicDownloadRequest:
+      type: object
+      properties:
+        password:
+          type: string
+          minLength: 8
+          maxLength: 128
+          description: Share password, when one was configured by the Sender.
     CreateUploadIntentRequest:
       type: object
       required: [fileName, sizeBytes, contentType]
@@ -130,6 +163,9 @@ components:
         status:
           type: string
           enum: [UPLOADING, SCANNING, ARCHIVING, READY, REJECTED, EXPIRED]
+        storageWarning:
+          type: string
+          description: Configured demo-storage budget warning for the Sender.
     PublicDownloadResponse:
       type: object
       required: [downloadUrl, expiresAt]

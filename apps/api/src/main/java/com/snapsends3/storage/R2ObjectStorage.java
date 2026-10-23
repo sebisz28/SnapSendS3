@@ -6,6 +6,7 @@ import java.time.Duration;
 import lombok.RequiredArgsConstructor;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
 import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequest;
@@ -60,5 +61,10 @@ class R2ObjectStorage implements ObjectStorage {
                 .key(objectKey)
                 .contentType("application/zip")
                 .build(), RequestBody.fromFile(archive));
+    }
+
+    @Override
+    public void delete(String objectKey) {
+        client.deleteObject(DeleteObjectRequest.builder().bucket(properties.getBucket()).key(objectKey).build());
     }
 }
