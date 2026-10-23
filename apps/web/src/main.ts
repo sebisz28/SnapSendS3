@@ -239,6 +239,7 @@ class AppComponent {
       this.error = cause instanceof Error ? cause.message : 'Could not check the share status.';
     } finally {
       this.statusWorking = false;
+      this.changeDetector.detectChanges();
     }
   }
 
@@ -266,6 +267,7 @@ class AppComponent {
       }
     } finally {
       this.recipientWorking = false;
+      this.changeDetector.detectChanges();
     }
   }
 
