@@ -52,6 +52,9 @@ services:
     build: .
     ports: ["8443:443"]
     depends_on: [api, keycloak]
+    volumes:
+      - caddy-data:/data
+      - caddy-config:/config
   api-e2e:
     build:
       context: ./apps/api
@@ -75,3 +78,5 @@ services:
       - keycloak
 volumes:
   postgres-data:
+  caddy-data:
+  caddy-config:
