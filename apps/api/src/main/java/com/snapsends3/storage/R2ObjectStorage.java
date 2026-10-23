@@ -1,6 +1,6 @@
 package com.snapsends3.storage;
 
-import com.snapsends3.config.R2StorageProperties;
+import com.snapsends3.configuration.R2StorageProperties;
 import java.net.URI;
 import java.time.Duration;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +16,7 @@ import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequ
 import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest;
 
 @RequiredArgsConstructor
-class R2ObjectStorage implements ObjectStorage {
+public class R2ObjectStorage implements ObjectStorage {
     private static final Duration UPLOAD_URL_TTL = Duration.ofMinutes(10);
 
     private final S3Presigner presigner;

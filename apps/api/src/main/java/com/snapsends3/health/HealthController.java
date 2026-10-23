@@ -1,7 +1,7 @@
 package com.snapsends3.health;
 
 import com.snapsends3.openapi.api.SystemApi;
-import com.snapsends3.openapi.model.HealthResponse;
+import com.snapsends3.dto.HealthResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
