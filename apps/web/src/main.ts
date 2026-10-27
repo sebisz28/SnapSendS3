@@ -58,7 +58,7 @@ type DownloadResponse = { downloadUrl: string; expiresAt: string };
           @if (error) { <p class="error" role="alert">{{ error }}</p> }
           @if (message) { <p class="notice" role="status" aria-live="polite">{{ message }}</p> }
           @if (shareUrl) {
-            <div class="success" role="status"><strong>Your secure link has been created</strong><p>{{ shareStatusMessage }}</p>@if (storageWarning) { <p class="notice">{{ storageWarning }}</p> }<button class="button secondary retry" type="button" (click)="checkShareStatus()" [disabled]="statusWorking">{{ statusWorking ? 'Checking…' : 'Check status' }}</button><label for="share-link">Share link</label><div class="link-field"><input id="share-link" [value]="shareUrl" readonly><button class="button secondary" type="button" (click)="copyLink()">{{ copied ? 'Copied' : 'Copy link' }}</button></div><p class="expiry">Expires {{ expiresAt | date:'medium' }}</p></div>
+            <div class="success" role="status"><strong>Your secure link has been created</strong><p>{{ shareStatusMessage }}</p>@if (storageWarning) { <p class="notice">{{ storageWarning }}</p> }<button class="button secondary retry" type="button" (click)="checkShareStatus()" [disabled]="statusWorking">{{ statusWorking ? 'Checking…' : 'Check status' }}</button><label for="share-link">Share link</label><div class="link-field"><input id="share-link" [value]="shareUrl" readonly><button class="button secondary" type="button" (click)="copyLink()">{{ copied ? 'Copied' : 'Copy link' }}</button></div><p class="expiry">Expires {{ expiresAt | date:'medium' }}</p><button class="button secondary retry" type="button" (click)="createAnotherLink()">Create another link</button></div>
           }
           <button class="button primary create" type="button" (click)="createAndUpload()" [disabled]="working || !files.length || !!shareUrl || !accessToken">
             {{ working ? 'Preparing secure link…' : 'Create secure link' }}
@@ -203,6 +203,10 @@ class AppComponent {
     } catch {
       this.error = 'Could not copy automatically. Select and copy the link above.';
     }
+  }
+
+  createAnotherLink(): void {
+    location.assign(location.pathname);
   }
 
   async signIn(): Promise<void> {
