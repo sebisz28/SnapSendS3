@@ -44,8 +44,8 @@ No production source change was needed. The intended production behavior was alr
 
 ### Test Scenarios Covered
 
-- A one-file share produces `Content-Disposition: attachment; filename="c2bd554e-0b81-4358-bb62-f12b48320871.png"` and PNG magic bytes.
-- A multi-file share produces `Content-Disposition: attachment; filename="snapsends3-share.zip"` and a readable archive containing `one.txt` and `two.txt`.
+- A one-file share produces an attachment named `sns003-proof.png`; its PNG signature and 1×1 dimensions are valid, and its downloaded bytes match the uploaded bytes.
+- A multi-file share produces an attachment named `snapsends3-share.zip`; the ZIP opens and both extracted files match their uploaded content. The archive entries are `001-one.txt` and `002-two.txt` because the archive writer prefixes ordered entries.
 - Expired, unready, and password-protected shares retain 410, 409, and 401 responses.
 - `mvn.cmd verify` completed with 15 tests, zero failures, and zero errors.
 
@@ -62,3 +62,5 @@ No configuration, schema, or API contract changes were required. After changing 
 - **Task:** [task.md](task.md)
 - **Plan:** [plan.md](plan.md)
 - **Delivery implementation:** `0b14333`
+- **Local Compose evidence:** [local-compose-download-verification.md](evidence/local-compose-download-verification.md)
+- **Reproduction script:** [verify-local-downloads.ps1](evidence/verify-local-downloads.ps1)
