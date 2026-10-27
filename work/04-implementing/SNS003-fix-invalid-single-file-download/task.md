@@ -34,10 +34,10 @@ implementation = "Sebastian.Szekely@endava.com"
 # Task: Fix invalid single-file download
 
 **Task ID**: SNS003
-**Status**: 02-planning
+**Status**: 04-implementing
 **Phase**: govern
 **Date**: 2026-10-23
-**Branch**: plan/SNS003-fix-invalid-single-file-download
+**Branch**: impl/SNS003-fix-invalid-single-file-download
 
 ## Problem Statement
 
@@ -52,10 +52,10 @@ The codebase already selects an original name for a one-file share and a ZIP nam
 
 ### Acceptance Criteria
 
-- [ ] Regression tests cover original-name selection for one-file shares and ZIP-name selection for multi-file shares.
-- [ ] Storage adapter tests cover an attachment disposition and safe filename sanitization.
-- [ ] Local Compose verification proves browser-visible attachment headers, original bytes, and valid ZIP integrity.
-- [ ] Expiry, password, and scan-gate controls continue to apply before a download URL is issued.
+- [x] Regression tests cover original-name selection for one-file shares and ZIP-name selection for multi-file shares.
+- [x] Storage adapter tests cover an attachment disposition and safe filename sanitization.
+- [x] Local Compose verification proves browser-visible attachment headers, original bytes, and valid ZIP integrity.
+- [x] Expiry, password, and scan-gate controls continue to apply before a download URL is issued.
 
 ## Non-Goals
 

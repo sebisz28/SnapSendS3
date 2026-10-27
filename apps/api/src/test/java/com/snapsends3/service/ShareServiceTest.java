@@ -115,6 +115,56 @@ class ShareServiceTest {
     }
 
     @Test
+    void namesMultiFileDownloadsAsZipArchive() {
+        ShareRepository repository = Mockito.mock(ShareRepository.class);
+        ShareFileRepository files = Mockito.mock(ShareFileRepository.class);
+        ObjectStorage storage = Mockito.mock(ObjectStorage.class);
+        DownloadAttemptRepository attempts = Mockito.mock(DownloadAttemptRepository.class);
+        Share share = new Share("token", "sender", Instant.parse("2026-10-22T00:00:00Z"));
+        share.finalizeUploads();
+        share.markReady("shares/share-id/download.zip");
+        when(repository.findByToken("token")).thenReturn(Optional.of(share));
+        when(files.findByShareId(share.getId())).thenReturn(java.util.List.of(
+                new ShareFile(share, "photo.png", 10, "shares/share-id/photo"),
+                new ShareFile(share, "notes.txt", 10, "shares/share-id/notes")));
+        when(storage.createDownloadUrl(any(), any())).thenReturn(URI.create("https://storage.example/download"));
+
+        new ShareService(repository, files, storage, Mockito.mock(ShareScanWorker.class),
+                Clock.fixed(Instant.parse("2026-10-21T00:00:00Z"), ZoneOffset.UTC), limits(Long.MAX_VALUE), attempts)
+                .createPublicDownload("token");
+
+        verify(storage).createDownloadUrl("shares/share-id/download.zip", "snapsends3-share.zip");
+    }
+
+    @Test
+    void preservesPublicDownloadAuthorizationResponses() {
+        ShareRepository repository = Mockito.mock(ShareRepository.class);
+        ShareFileRepository files = Mockito.mock(ShareFileRepository.class);
+        Share unready = new Share("unready", "sender", Instant.parse("2026-10-22T00:00:00Z"));
+        Share expired = new Share("expired", "sender", Instant.parse("2026-10-20T00:00:00Z"));
+        Share protectedShare = new Share("protected", "sender", Instant.parse("2026-10-22T00:00:00Z"),
+                SharePasswordHasher.hash("password1"));
+        protectedShare.finalizeUploads();
+        protectedShare.markReady("shares/share-id/file");
+        when(repository.findByToken("unready")).thenReturn(Optional.of(unready));
+        when(repository.findByToken("expired")).thenReturn(Optional.of(expired));
+        when(repository.findByToken("protected")).thenReturn(Optional.of(protectedShare));
+        ShareService service = new ShareService(repository, files, Mockito.mock(ObjectStorage.class),
+                Mockito.mock(ShareScanWorker.class), Clock.fixed(Instant.parse("2026-10-21T00:00:00Z"), ZoneOffset.UTC),
+                limits(Long.MAX_VALUE), Mockito.mock(DownloadAttemptRepository.class));
+
+        assertThatThrownBy(() -> service.createPublicDownload("unready"))
+                .extracting(error -> ((ResponseStatusException) error).getStatusCode())
+                .isEqualTo(HttpStatus.CONFLICT);
+        assertThatThrownBy(() -> service.createPublicDownload("expired"))
+                .extracting(error -> ((ResponseStatusException) error).getStatusCode())
+                .isEqualTo(HttpStatus.GONE);
+        assertThatThrownBy(() -> service.createPublicDownload("protected"))
+                .extracting(error -> ((ResponseStatusException) error).getStatusCode())
+                .isEqualTo(HttpStatus.UNAUTHORIZED);
+    }
+
+    @Test
     void returnsStatusToTheShareSender() {
         ShareRepository repository = Mockito.mock(ShareRepository.class);
         UUID shareId = UUID.randomUUID();
