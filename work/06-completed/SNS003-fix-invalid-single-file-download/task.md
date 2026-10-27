@@ -2,7 +2,7 @@
 [metadata]
 task_id = "SNS003"
 title   = "Fix invalid single-file download"
-status  = "04-implementing"
+status  = "06-completed"
 
 kind = "bug"
 [sources]
