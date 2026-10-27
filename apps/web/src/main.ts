@@ -58,7 +58,7 @@ type DownloadResponse = { downloadUrl: string; expiresAt: string };
           @if (error) { <p class="error" role="alert">{{ error }}</p> }
           @if (message) { <p class="notice" role="status" aria-live="polite">{{ message }}</p> }
           @if (shareUrl) {
-            <div class="success" role="status"><strong>Your secure link has been created</strong><p>{{ shareStatusMessage }}</p>@if (storageWarning) { <p class="notice">{{ storageWarning }}</p> }<button class="button secondary retry" type="button" (click)="checkShareStatus()" [disabled]="statusWorking">{{ statusWorking ? 'Checking…' : 'Check status' }}</button><label for="share-link">Share link</label><div class="link-field"><input id="share-link" [value]="shareUrl" readonly><button class="button secondary" type="button" (click)="copyLink()">{{ copied ? 'Copied' : 'Copy link' }}</button></div><p class="expiry">Expires {{ expiresAt | date:'medium' }}</p><button class="button secondary retry" type="button" (click)="createAnotherLink()">Create another link</button></div>
+            <div class="success" role="status"><strong>Your secure link has been created</strong><p>{{ shareStatusMessage }}</p>@if (storageWarning) { <p class="notice">{{ storageWarning }}</p> }<button class="button secondary retry" type="button" (click)="checkShareStatus()" [disabled]="statusWorking">{{ statusWorking ? 'Checking…' : 'Check status' }}</button><label for="share-link">Share link</label><div class="link-field"><input id="share-link" [value]="shareUrl" readonly><button class="button secondary" type="button" [class.copied]="copied" (click)="copyLink()">{{ copied ? 'Copied' : 'Copy link' }}</button></div>@if (copied) { <p class="copy-feedback" role="status" aria-live="polite" aria-atomic="true">Link copied to clipboard.</p> }<p class="expiry">Expires {{ expiresAt | date:'medium' }}</p><button class="button secondary retry" type="button" (click)="createAnotherLink()">Create another link</button></div>
           }
           <button class="button primary create" type="button" (click)="createAndUpload()" [disabled]="working || !files.length || !!shareUrl || !accessToken">
             {{ working ? 'Preparing secure link…' : 'Create secure link' }}
@@ -87,6 +87,7 @@ class AppComponent {
   statusWorking = false;
   expiresAt = '';
   copied = false;
+  private copyFeedbackTimer: number | undefined;
   downloadUrl = '';
   recipientMessage = 'Checking link status…';
   senderPassword = '';
@@ -197,9 +198,16 @@ class AppComponent {
   }
 
   async copyLink(): Promise<void> {
+    this.copied = false;
+    this.error = '';
+    window.clearTimeout(this.copyFeedbackTimer);
     try {
       await navigator.clipboard.writeText(this.shareUrl);
       this.copied = true;
+      this.copyFeedbackTimer = window.setTimeout(() => {
+        this.copied = false;
+        this.changeDetector.detectChanges();
+      }, 4000);
     } catch {
       this.error = 'Could not copy automatically. Select and copy the link above.';
     }
