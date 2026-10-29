@@ -2,7 +2,7 @@
 [metadata]
 task_id = "SNS004"
 title   = "sns004"
-status  = "05-pending-completion"
+status  = "04-implementing"
 
 [sources]
 epic      = ""
@@ -19,7 +19,7 @@ documents = [
 
 [links]
 blocks  = []
-related = ["../../04-implementing/SNS001-epic-formation-for-snapsends3-external-document-sh/task.md"]
+related = ["../SNS001-epic-formation-for-snapsends3-external-document-sh/task.md"]
 parent  = []
 child   = []
 
@@ -37,10 +37,10 @@ implementation = "Sebastian.Szekely@endava.com"
 # Task: sns004
 
 **Task ID**: SNS004
-**Status**: 05-pending-completion
+**Status**: 04-implementing
 **Phase**: flow
 **Date**: 2026-10-29
-**Branch**: impl/sns004-box-experience (merged in PR #5)
+**Branch**: impl/sns004-branded-login (follow-up to PR #5)
 
 ## Problem Statement
 
@@ -52,7 +52,8 @@ The current interface feels visually poor and needs a polished, modern refresh. 
 
 - Create a dedicated landing page for the box reveal experience.
 - Establish a clean visual hierarchy with considered spacing, refined typography, subtle depth, and purposeful interactions.
-- Make the existing file-upload entry point easy to find and use.
+- Make the existing file-upload entry point easy to find and use, sending signed-out users directly to the existing Keycloak sign-in page and returning them to `/upload` after sign-in.
+- Apply the same restrained charcoal, blue, and warm-light visual language to the Keycloak login page without imitating Apple product screens.
 
 ### Acceptance Criteria
 
@@ -60,7 +61,8 @@ The current interface feels visually poor and needs a polished, modern refresh. 
 - [ ] Scrolling progressively opens the box with smooth motion tied to scroll position and a restrained soft-white and warm-gold light revealed from inside.
 - [ ] The box has subtle highlights and a gentle luminous finish; the overall effect remains elegant and uncluttered.
 - [x] At the end of the reveal, a prominent button labeled “Upload your files” is visible and easy to find. (The CTA is in normal page flow and its route was browser-checked.)
-- [ ] Activating “Upload your files” navigates to the existing sender sign-in entry; no new login flow is introduced and authentication behavior remains unchanged.
+- [x] Activating “Upload your files” starts the existing authorization-code + PKCE sign-in directly; after sign-in, the user returns to the sender workspace at `/upload`. If already signed in, the CTA goes straight to `/upload`. (The `/upload` callback is unit-tested; credentials were not submitted.)
+- [x] The Keycloak credential page uses a SnapSendS3 theme consistent with the landing page while preserving Keycloak form semantics, validation, password recovery, and authentication behavior. (Fresh-realm login page and credential controls verified; recovery and validation were not submitted.)
 - [x] Previously issued recipient share links continue to work after the landing page is added. (Legacy root share route browser-checked.)
 - [ ] Buttons and other interactive elements provide clear, subtle hover and pressed feedback.
 - [ ] The experience is usable across mobile and desktop layouts and input methods.
@@ -70,7 +72,7 @@ The current interface feels visually poor and needs a polished, modern refresh. 
 
 ## Non-Goals
 
-- Replacing, redesigning, or changing the behavior of the existing login or authentication flow.
+- Replacing the identity provider or changing the behavior of the existing login or authentication flow.
 - Copying Apple branding or specific Apple product screens.
 - Adding unrelated content or interactions that clutter the landing page.
 
@@ -83,7 +85,7 @@ The current interface feels visually poor and needs a polished, modern refresh. 
 ### Related Tasks
 
 - **Blocks**: None identified.
-- **Related**: [SNS001 — Epic formation for SnapSendS3 external document sharing](../../04-implementing/SNS001-epic-formation-for-snapsends3-external-document-sh/task.md).
+- **Related**: [SNS001 — Epic formation for SnapSendS3 external document sharing](../SNS001-epic-formation-for-snapsends3-external-document-sh/task.md).
 
 ## Constraints & Dependencies
 

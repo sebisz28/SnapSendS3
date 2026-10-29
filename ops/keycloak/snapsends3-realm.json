@@ -1,6 +1,7 @@
 {
   "realm": "snapsends3",
   "enabled": true,
+  "loginTheme": "snapsends3",
   "roles": { "realm": [{ "name": "dava.sender" }] },
   "clients": [{
     "clientId": "snapsends3-web",

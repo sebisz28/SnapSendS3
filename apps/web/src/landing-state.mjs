@@ -9,3 +9,8 @@ export function scrollProgress(trackTop, trackHeight, viewportHeight) {
   const travel = Math.max(trackHeight - viewportHeight, 1);
   return Math.min(1, Math.max(0, -trackTop / travel));
 }
+
+export function signInRedirectUri(origin, currentPath, requestedPath = currentPath) {
+  const callbackPath = requestedPath === '/upload' ? '/upload' : currentPath;
+  return new URL(callbackPath, origin).href;
+}
