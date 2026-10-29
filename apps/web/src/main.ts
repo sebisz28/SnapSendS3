@@ -2,6 +2,7 @@ import 'zone.js';
 import { bootstrapApplication } from '@angular/platform-browser';
 import { ChangeDetectorRef, Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { resolveViewMode } from './landing-state.mjs';
 
 type ShareResponse = { id: string; token: string; expiresAt: string; status: string; storageWarning?: string };
 type UploadIntent = { uploadUrl: string };
@@ -14,7 +15,7 @@ type DownloadResponse = { downloadUrl: string; expiresAt: string };
   template: `
     <header class="topbar"><a class="brand" href="/" aria-label="SnapSendS3 home"><span class="brand-mark" aria-hidden="true">S</span> SnapSendS3</a>@if (!recipientToken) { <button class="button secondary" type="button" (click)="accessToken ? signOut() : signIn()" [disabled]="authWorking">{{ authWorking ? 'Signing in…' : accessToken ? 'Sign out' : 'Sign in' }}</button> }</header>
     <main class="page">
-      @if (recipientToken) {
+      @if (viewMode === 'recipient') {
         <section class="card recipient-card" aria-labelledby="recipient-title">
           <p class="eyebrow">SECURE DELIVERY</p>
           <h1 id="recipient-title">Your files are being prepared</h1>
@@ -29,6 +30,12 @@ type DownloadResponse = { downloadUrl: string; expiresAt: string };
           }
           @if (canRetryRecipient && !downloadUrl) { <button class="button secondary retry" type="button" (click)="checkRecipientAgain()" [disabled]="recipientWorking">{{ recipientWorking ? 'Checking…' : 'Check again' }}</button> }
           @if (downloadUrl) { <a class="button primary download" [href]="downloadUrl">Download files</a> }
+        </section>
+      } @else if (viewMode === 'landing') {
+        <section class="landing-intro" aria-labelledby="landing-title">
+          <p class="eyebrow">PRIVATE FILE DELIVERY</p>
+          <h1 id="landing-title">Share files with confidence.</h1>
+          <p class="intro">A calm, secure way to send important files to the people who need them.</p>
         </section>
       } @else {
         <section class="intro-block">
@@ -73,7 +80,8 @@ type DownloadResponse = { downloadUrl: string; expiresAt: string };
 class AppComponent {
   readonly issuer = `${location.origin}/auth/realms/snapsends3`;
   readonly clientId = 'snapsends3-web';
-  readonly recipientToken = new URLSearchParams(location.search).get('share');
+  readonly viewMode = resolveViewMode(location.pathname, location.search);
+  readonly recipientToken = this.viewMode === 'recipient' ? new URLSearchParams(location.search).get('share') : null;
   readonly fileLimit = 100 * 1024 * 1024;
   readonly shareLimit = 500 * 1024 * 1024;
   files: File[] = [];
