@@ -2,7 +2,7 @@
 [metadata]
 task_id = "SNS004"
 title   = "sns004"
-status  = "02-planning"
+status  = "03-pending-implementation"
 
 [sources]
 epic      = ""
