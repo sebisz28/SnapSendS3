@@ -2,22 +2,22 @@
 
 ## Unit Tests (Node built-in test runner; no added dependencies)
 
-- [ ] Resolve recipient query before landing/sender path selection.
-- [ ] Resolve `/upload` to sender view.
-- [ ] Resolve root OIDC callback to sender view.
-- [ ] Resolve root without query to landing view.
-- [ ] Clamp scroll progress at both scene boundaries.
-- [ ] Compute a midpoint scroll progress value correctly.
+- [x] Resolve recipient query before landing/sender path selection.
+- [x] Resolve `/upload` to sender view.
+- [x] Resolve root OIDC callback to sender view.
+- [x] Resolve root without query to landing view.
+- [x] Clamp scroll progress at both scene boundaries.
+- [x] Compute a midpoint scroll progress value correctly.
 
 ## Browser / Integration Checks
 
-- [ ] `/` renders landing; `/upload` renders existing sender workspace.
-- [ ] `/?share=token` and `/upload?share=token` both render recipient view.
-- [ ] OIDC callback preserves existing pathname behavior.
-- [ ] Mouse and keyboard CTA navigation reaches `/upload`.
-- [ ] Scroll reveal states at start, midpoint, and end; responsive mobile/desktop.
-- [ ] Reduced-motion presentation disables scroll transforms.
-- [ ] Keyboard focus, contrast, screen-reader semantics, and no horizontal overflow.
+- [x] `/` renders landing; `/upload` renders existing sender workspace and sign-in control.
+- [x] `/?share=token` renders the recipient view; unit coverage confirms share-query precedence on `/upload` as well.
+- [ ] OIDC callback preserves the end-to-end authentication round trip (route selection is unit-tested; real auth was not exercised).
+- [ ] Mouse and keyboard CTA navigation reaches `/upload` (mouse click was browser-checked; keyboard activation remains to verify).
+- [ ] Scroll reveal states at start, midpoint, and end across mobile and desktop (phone-sized start/opening checked; desktop/end coverage remains).
+- [ ] Reduced-motion presentation disables scroll transforms (implementation is present; runtime preference emulation remains to verify).
+- [ ] Keyboard focus, contrast, screen-reader semantics, and no horizontal overflow (semantics inspected; full keyboard/contrast/overflow audit remains).
 
 ## Pipeline/API Tests
 
