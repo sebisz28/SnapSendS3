@@ -13,13 +13,13 @@ type DownloadResponse = { downloadUrl: string; expiresAt: string };
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div [class.landing-shell]="viewMode === 'landing'">
-    <header [class.topbar]="viewMode !== 'landing'" [class.landing-topbar]="viewMode === 'landing'">
+    <div [class.landing-shell]="viewMode === 'landing'" [class.sender-shell]="viewMode === 'sender'">
+    <header [class.topbar]="viewMode !== 'landing'" [class.landing-topbar]="viewMode === 'landing'" [class.sender-topbar]="viewMode === 'sender'">
       <a class="brand" href="/" aria-label="SnapSendS3 home"><span class="brand-mark" aria-hidden="true">S</span> SnapSendS3</a>
       @if (viewMode === 'landing') { <span class="landing-header-note">Private file delivery</span> }
       @if (viewMode === 'sender') { <button class="button secondary" type="button" (click)="accessToken ? signOut() : signIn()" [disabled]="authWorking">{{ authWorking ? 'Signing in…' : accessToken ? 'Sign out' : 'Sign in' }}</button> }
     </header>
-    <main [class.page]="viewMode !== 'landing'" [class.landing-page]="viewMode === 'landing'">
+    <main [class.page]="viewMode !== 'landing'" [class.landing-page]="viewMode === 'landing'" [class.sender-page]="viewMode === 'sender'">
       @if (viewMode === 'recipient') {
         <section class="card recipient-card" aria-labelledby="recipient-title">
           <p class="eyebrow">SECURE DELIVERY</p>
@@ -83,13 +83,31 @@ type DownloadResponse = { downloadUrl: string; expiresAt: string };
           </div>
         </section>
       } @else {
-        <section class="intro-block">
-          <p class="eyebrow">SENDER WORKSPACE</p>
-          <h1>Share files securely.</h1>
-          <p class="intro">Send operational documents through a private link. Files are checked before they can be downloaded.</p>
-        </section>
-        @if (!accessToken) { <p class="prototype-notice" role="note">Sign in with your Sender account to create a secure link.</p> }
-        <section class="card" aria-labelledby="upload-title">
+        <div class="sender-layout">
+          <section class="sender-hero" aria-labelledby="sender-title">
+            <div class="sender-copy">
+              <p class="eyebrow"><span class="sender-eyebrow-dot" aria-hidden="true"></span> PRIVATE FILE DELIVERY</p>
+              <h1 id="sender-title">Send something<br><span>important.</span></h1>
+              <p class="intro">A clear, considered way to send sensitive files. Every share is private, checked, and easy to deliver.</p>
+            </div>
+            <div class="sender-art" aria-hidden="true">
+              <div class="sender-art-orb sender-art-orb-one"></div>
+              <div class="sender-art-orb sender-art-orb-two"></div>
+              <div class="sender-art-file sender-art-file-back"></div>
+              <div class="sender-art-file sender-art-file-front">
+                <span class="sender-art-lock">✓</span>
+                <span class="sender-art-caption">PRIVATE SHARE</span>
+                <span class="sender-art-line"></span>
+                <span class="sender-art-line short"></span>
+                <span class="sender-art-chip">SECURELY DELIVERED</span>
+              </div>
+              <div class="sender-art-status"><span></span> Files protected</div>
+            </div>
+            <div class="sender-benefits"><span>Private by design</span><span>Security checked</span><span>Six-hour expiry</span></div>
+          </section>
+          <div class="sender-form-column">
+          @if (!accessToken) { <p class="prototype-notice" role="note"><span class="notice-spark" aria-hidden="true"></span> Sign in with your Sender account to create a secure link.</p> }
+          <section class="card sender-upload-card" aria-labelledby="upload-title">
           <div class="section-heading"><span class="step">1</span><div><h2 id="upload-title">Choose your files</h2><p>Up to 100 MB per file and 500 MB per share.</p></div></div>
           <input id="files" class="visually-hidden" type="file" multiple (change)="selectFiles($event)" [disabled]="working || !accessToken" aria-describedby="file-help">
           <label class="file-picker" for="files"><span class="upload-icon" aria-hidden="true">↑</span><strong>Select files to share</strong><span>Choose one or more files from your device</span></label>
@@ -117,6 +135,8 @@ type DownloadResponse = { downloadUrl: string; expiresAt: string };
           </button>
           <p class="footnote">Every file is scanned before download. Your link expires after six hours.</p>
         </section>
+          </div>
+        </div>
       }
       @if (viewMode === 'landing') {
         <footer class="landing-footer">Private storage <span aria-hidden="true">·</span> Security checked before download <span aria-hidden="true">·</span> Six-hour expiry</footer>
