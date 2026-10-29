@@ -2,7 +2,7 @@
 [metadata]
 task_id = "SNS004"
 title   = "sns004"
-status  = "03-pending-implementation"
+status  = "04-implementing"
 
 [sources]
 epic      = ""
@@ -19,19 +19,19 @@ documents = [
 
 [links]
 blocks  = []
-related = ["../../04-implementing/SNS001-epic-formation-for-snapsends3-external-document-sh/task.md"]
+related = ["../SNS001-epic-formation-for-snapsends3-external-document-sh/task.md"]
 parent  = []
 child   = []
 
 [workflow]
 defined = "2026-10-29"
 planned = "2026-10-29"
-implemented = ""
+implemented = "2026-10-29"
 
 [assignments]
 definition     = ""
 planning       = "Sebastian.Szekely@endava.com"
-implementation = ""
+implementation = "Sebastian.Szekely@endava.com"
 +++
 
 # Task: sns004
@@ -83,7 +83,7 @@ The current interface feels visually poor and needs a polished, modern refresh. 
 ### Related Tasks
 
 - **Blocks**: None identified.
-- **Related**: [SNS001 — Epic formation for SnapSendS3 external document sharing](../../04-implementing/SNS001-epic-formation-for-snapsends3-external-document-sh/task.md).
+- **Related**: [SNS001 — Epic formation for SnapSendS3 external document sharing](../SNS001-epic-formation-for-snapsends3-external-document-sh/task.md).
 
 ## Constraints & Dependencies
 
