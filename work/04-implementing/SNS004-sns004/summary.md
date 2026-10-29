@@ -6,7 +6,7 @@
 **Title:** sns004  
 **Implemented By:** Sebastian.Szekely@endava.com + Codex  
 **Date:** 2026-10-29  
-**Status:** Follow-up implementation ready for review; task remains in `04-implementing` until this change is merged.
+**Status:** Follow-up implementation committed and pushed; PR creation is pending GitHub app reauthentication. Task remains in `04-implementing`.
 
 ## Implementation
 
@@ -47,3 +47,4 @@ The previously merged landing experience remains in place: a responsive scroll-d
 - [Integration checks](working/integration-checks.md)
 - [Implementation inventory](working/implementation-inventory.md)
 - [Merged landing experience PR #5](https://github.com/sebisz28/SnapSendS3/pull/5)
+- [Create the follow-up PR](https://github.com/sebisz28/SnapSendS3/pull/new/impl/sns004-branded-login)
