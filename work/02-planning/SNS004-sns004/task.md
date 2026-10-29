@@ -2,7 +2,7 @@
 [metadata]
 task_id = "SNS004"
 title   = "sns004"
-status  = "01-pending-planning"
+status  = "02-planning"
 
 [sources]
 epic      = ""
@@ -16,12 +16,12 @@ child   = []
 
 [workflow]
 defined = "2026-10-29"
-planned = ""
+planned = "2026-10-29"
 implemented = ""
 
 [assignments]
 definition     = ""
-planning       = ""
+planning       = "Sebastian.Szekely@endava.com"
 implementation = ""
 +++
 
