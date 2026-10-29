@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { resolveViewMode, scrollProgress } from '../src/landing-state.mjs';
+import { resolveViewMode, scrollProgress, signInRedirectUri } from '../src/landing-state.mjs';
 
 test('view selection keeps landing, sender, callback, and recipient paths distinct', () => {
   // Given the requested browser pathname and query, when the view is selected,
@@ -10,6 +10,7 @@ test('view selection keeps landing, sender, callback, and recipient paths distin
     ['/upload', '', 'sender'],
     ['/upload/', '', 'sender'],
     ['/', '?code=auth-code&state=oauth-state', 'sender'],
+    ['/upload', '?code=auth-code&state=oauth-state', 'sender'],
     ['/', '?share=legacy-token', 'recipient'],
     ['/upload', '?share=new-token', 'recipient'],
     ['/', '?share=', 'landing'],
@@ -18,6 +19,13 @@ test('view selection keeps landing, sender, callback, and recipient paths distin
   for (const [path, query, expected] of cases) {
     assert.equal(resolveViewMode(path, query), expected, `${path}${query}`);
   }
+});
+
+test('landing upload action starts sign-in with a same-origin /upload callback', () => {
+  // Given the landing page, when upload sign-in is requested, then the existing OIDC flow returns to /upload.
+  assert.equal(signInRedirectUri('https://files.example.test', '/', '/upload'), 'https://files.example.test/upload');
+  assert.equal(signInRedirectUri('https://files.example.test', '/upload', '/upload'), 'https://files.example.test/upload');
+  assert.equal(signInRedirectUri('https://files.example.test', '/', 'https://other.example.test/'), 'https://files.example.test/');
 });
 
 test('scroll progress clamps at the scene boundaries and interpolates in between', () => {
