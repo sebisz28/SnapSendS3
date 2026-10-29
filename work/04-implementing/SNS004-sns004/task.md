@@ -59,7 +59,7 @@ The current interface feels visually poor and needs a polished, modern refresh. 
 
 - [x] The dedicated page opens with a centered white-and-blue 3D box on a charcoal-gray-to-faded-black background.
 - [ ] Scrolling progressively opens the box with smooth motion tied to scroll position and a restrained soft-white and warm-gold light revealed from inside.
-- [ ] The box has subtle highlights and a gentle luminous finish; the overall effect remains elegant and uncluttered.
+- [x] The box has subtle highlights and a gentle luminous finish; the interior opening shows only the restrained warm light, without a blue ribbon crossing it.
 - [x] At the end of the reveal, a prominent button labeled “Upload your files” is visible and easy to find. (The CTA is in normal page flow and its route was browser-checked.)
 - [x] Activating “Upload your files” starts the existing authorization-code + PKCE sign-in directly; after sign-in, the user returns to the sender workspace at `/upload`. If already signed in, the CTA goes straight to `/upload`. (The `/upload` callback is unit-tested; credentials were not submitted.)
 - [x] The Keycloak credential page uses a SnapSendS3 theme consistent with the landing page while preserving Keycloak form semantics, validation, password recovery, and authentication behavior. (Fresh-realm login page and credential controls verified; recovery and validation were not submitted.)

@@ -53,21 +53,20 @@ type DownloadResponse = { downloadUrl: string; expiresAt: string };
                   <linearGradient id="box-lid" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff"/><stop offset=".7" stop-color="#e9f0f9"/><stop offset="1" stop-color="#c7d8ed"/></linearGradient>
                   <linearGradient id="box-ribbon" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#5b93e6"/><stop offset="1" stop-color="#245eb6"/></linearGradient>
                   <radialGradient id="box-light"><stop stop-color="#fff7df" stop-opacity=".96"/><stop offset=".48" stop-color="#f4d894" stop-opacity=".58"/><stop offset="1" stop-color="#f4d894" stop-opacity="0"/></radialGradient>
+                  <clipPath id="box-interior"><path d="M91 153 210 105 329 153 210 202Z"/></clipPath>
                 </defs>
                 <ellipse cx="210" cy="333" rx="142" ry="25" fill="#020406" opacity=".54"/>
-                <ellipse class="box-interior-light" cx="210" cy="190" rx="118" ry="58" fill="url(#box-light)"/>
                 <path d="M69 153 210 211 210 346 69 286Z" fill="url(#box-front)"/>
                 <path d="M210 211 351 153 351 286 210 346Z" fill="url(#box-side)"/>
                 <path d="M187 221 210 230 210 346 187 336Z" fill="url(#box-ribbon)" opacity=".9"/>
                 <path d="M210 230 232 221 232 336 210 346Z" fill="#2f69bd" opacity=".88"/>
                 <path d="M69 153 210 94 351 153 210 212Z" fill="#d6e0ee"/>
                 <path d="M91 153 210 105 329 153 210 202Z" fill="#24313e" opacity=".82"/>
-                <path d="M192 111 210 103 228 111 228 202 210 210 192 202Z" fill="url(#box-ribbon)"/>
+                <ellipse class="box-interior-light" cx="210" cy="165" rx="118" ry="62" fill="url(#box-light)" clip-path="url(#box-interior)"/>
                 <g class="box-lid">
                   <path d="M69 143 210 84 351 143 210 202Z" fill="url(#box-lid)" stroke="#fff" stroke-opacity=".78" stroke-width="2"/>
                   <path d="M69 143 210 202 210 226 69 167Z" fill="#d9e5f4"/>
                   <path d="M210 202 351 143 351 167 210 226Z" fill="#7fa7dd"/>
-                  <path d="M192 91 210 83 228 91 228 210 210 218 192 210Z" fill="url(#box-ribbon)"/>
                 </g>
                 <path d="M69 153 210 212 351 153" fill="none" stroke="#fff" stroke-opacity=".58" stroke-width="2"/>
               </svg>

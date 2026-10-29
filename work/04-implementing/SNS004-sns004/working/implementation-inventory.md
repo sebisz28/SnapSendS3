@@ -10,6 +10,7 @@
 - [x] Compute a midpoint scroll progress value correctly.
 - [x] Build a same-origin `/upload` OIDC redirect URI for the landing CTA.
 - [x] Verify Keycloak realm theme selection, parent theme, stylesheet registration, selectors, and read-only Compose mount.
+- [x] Keep the box interior light within the opening and remove the blue ribbon from the opening and lid.
 
 ## Browser / Integration Checks
 
