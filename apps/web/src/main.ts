@@ -1,8 +1,8 @@
 import 'zone.js';
 import { bootstrapApplication } from '@angular/platform-browser';
-import { ChangeDetectorRef, Component } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, NgZone, OnDestroy, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { resolveViewMode } from './landing-state.mjs';
+import { resolveViewMode, scrollProgress } from './landing-state.mjs';
 
 type ShareResponse = { id: string; token: string; expiresAt: string; status: string; storageWarning?: string };
 type UploadIntent = { uploadUrl: string };
@@ -13,8 +13,13 @@ type DownloadResponse = { downloadUrl: string; expiresAt: string };
   standalone: true,
   imports: [CommonModule],
   template: `
-    <header class="topbar"><a class="brand" href="/" aria-label="SnapSendS3 home"><span class="brand-mark" aria-hidden="true">S</span> SnapSendS3</a>@if (!recipientToken) { <button class="button secondary" type="button" (click)="accessToken ? signOut() : signIn()" [disabled]="authWorking">{{ authWorking ? 'Signing in…' : accessToken ? 'Sign out' : 'Sign in' }}</button> }</header>
-    <main class="page">
+    <div [class.landing-shell]="viewMode === 'landing'">
+    <header [class.topbar]="viewMode !== 'landing'" [class.landing-topbar]="viewMode === 'landing'">
+      <a class="brand" href="/" aria-label="SnapSendS3 home"><span class="brand-mark" aria-hidden="true">S</span> SnapSendS3</a>
+      @if (viewMode === 'landing') { <span class="landing-header-note">Private file delivery</span> }
+      @if (viewMode === 'sender') { <button class="button secondary" type="button" (click)="accessToken ? signOut() : signIn()" [disabled]="authWorking">{{ authWorking ? 'Signing in…' : accessToken ? 'Sign out' : 'Sign in' }}</button> }
+    </header>
+    <main [class.page]="viewMode !== 'landing'" [class.landing-page]="viewMode === 'landing'">
       @if (viewMode === 'recipient') {
         <section class="card recipient-card" aria-labelledby="recipient-title">
           <p class="eyebrow">SECURE DELIVERY</p>
@@ -32,10 +37,51 @@ type DownloadResponse = { downloadUrl: string; expiresAt: string };
           @if (downloadUrl) { <a class="button primary download" [href]="downloadUrl">Download files</a> }
         </section>
       } @else if (viewMode === 'landing') {
-        <section class="landing-intro" aria-labelledby="landing-title">
-          <p class="eyebrow">PRIVATE FILE DELIVERY</p>
-          <h1 id="landing-title">Share files with confidence.</h1>
-          <p class="intro">A calm, secure way to send important files to the people who need them.</p>
+        <section #landingTrack class="landing-track" aria-labelledby="landing-title">
+          <div class="landing-scene">
+            <div class="landing-copy">
+              <p class="landing-eyebrow">PRIVATE FILE DELIVERY</p>
+              <h1 id="landing-title">Share files with confidence.</h1>
+              <p>Important files deserve a quieter, more considered way to travel.</p>
+            </div>
+            <div class="box-stage" aria-hidden="true">
+              <div class="box-halo"></div>
+              <svg class="box-visual" viewBox="0 0 420 380" focusable="false">
+                <defs>
+                  <linearGradient id="box-front" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff"/><stop offset="1" stop-color="#dbe6f5"/></linearGradient>
+                  <linearGradient id="box-side" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#8eb8f2"/><stop offset="1" stop-color="#477bc7"/></linearGradient>
+                  <linearGradient id="box-lid" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff"/><stop offset=".7" stop-color="#e9f0f9"/><stop offset="1" stop-color="#c7d8ed"/></linearGradient>
+                  <linearGradient id="box-ribbon" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#5b93e6"/><stop offset="1" stop-color="#245eb6"/></linearGradient>
+                  <radialGradient id="box-light"><stop stop-color="#fff7df" stop-opacity=".96"/><stop offset=".48" stop-color="#f4d894" stop-opacity=".58"/><stop offset="1" stop-color="#f4d894" stop-opacity="0"/></radialGradient>
+                </defs>
+                <ellipse cx="210" cy="333" rx="142" ry="25" fill="#020406" opacity=".54"/>
+                <ellipse class="box-interior-light" cx="210" cy="190" rx="118" ry="58" fill="url(#box-light)"/>
+                <path d="M69 153 210 211 210 346 69 286Z" fill="url(#box-front)"/>
+                <path d="M210 211 351 153 351 286 210 346Z" fill="url(#box-side)"/>
+                <path d="M187 221 210 230 210 346 187 336Z" fill="url(#box-ribbon)" opacity=".9"/>
+                <path d="M210 230 232 221 232 336 210 346Z" fill="#2f69bd" opacity=".88"/>
+                <path d="M69 153 210 94 351 153 210 212Z" fill="#d6e0ee"/>
+                <path d="M91 153 210 105 329 153 210 202Z" fill="#24313e" opacity=".82"/>
+                <path d="M192 111 210 103 228 111 228 202 210 210 192 202Z" fill="url(#box-ribbon)"/>
+                <g class="box-lid">
+                  <path d="M69 143 210 84 351 143 210 202Z" fill="url(#box-lid)" stroke="#fff" stroke-opacity=".78" stroke-width="2"/>
+                  <path d="M69 143 210 202 210 226 69 167Z" fill="#d9e5f4"/>
+                  <path d="M210 202 351 143 351 167 210 226Z" fill="#7fa7dd"/>
+                  <path d="M192 91 210 83 228 91 228 210 210 218 192 210Z" fill="url(#box-ribbon)"/>
+                </g>
+                <path d="M69 153 210 212 351 153" fill="none" stroke="#fff" stroke-opacity=".58" stroke-width="2"/>
+              </svg>
+            </div>
+            <p class="scroll-cue"><span aria-hidden="true"></span>Scroll to open</p>
+          </div>
+        </section>
+        <section class="upload-section" aria-labelledby="upload-cta-title">
+          <div class="upload-card">
+            <p class="landing-eyebrow">READY WHEN YOU ARE</p>
+            <h2 id="upload-cta-title">Your files, thoughtfully delivered.</h2>
+            <p>Choose your files and create a secure link in moments.</p>
+            <a class="upload-cta" href="/upload">Upload your files <span aria-hidden="true">→</span></a>
+          </div>
         </section>
       } @else {
         <section class="intro-block">
@@ -73,15 +119,38 @@ type DownloadResponse = { downloadUrl: string; expiresAt: string };
           <p class="footnote">Every file is scanned before download. Your link expires after six hours.</p>
         </section>
       }
-      <footer><span class="shield" aria-hidden="true">✓</span> Private storage <span class="dot">·</span> Scan checked before download <span class="dot">·</span> Six-hour expiry</footer>
+      @if (viewMode === 'landing') {
+        <footer class="landing-footer">Private storage <span aria-hidden="true">·</span> Security checked before download <span aria-hidden="true">·</span> Six-hour expiry</footer>
+      } @else {
+        <footer><span class="shield" aria-hidden="true">✓</span> Private storage <span class="dot">·</span> Scan checked before download <span class="dot">·</span> Six-hour expiry</footer>
+      }
     </main>
+    </div>
   `,
 })
-class AppComponent {
+class AppComponent implements AfterViewInit, OnDestroy {
   readonly issuer = `${location.origin}/auth/realms/snapsends3`;
   readonly clientId = 'snapsends3-web';
   readonly viewMode = resolveViewMode(location.pathname, location.search);
   readonly recipientToken = this.viewMode === 'recipient' ? new URLSearchParams(location.search).get('share') : null;
+  @ViewChild('landingTrack') private landingTrack?: ElementRef<HTMLElement>;
+  private readonly reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  private animationFrame = 0;
+  private readonly updateReveal = (): void => {
+    const track = this.landingTrack?.nativeElement;
+    if (!track) return;
+    if (this.reducedMotion.matches) {
+      this.setReveal(1);
+      return;
+    }
+    if (this.animationFrame) return;
+    this.animationFrame = requestAnimationFrame(() => {
+      this.animationFrame = 0;
+      const currentTrack = this.landingTrack?.nativeElement;
+      if (currentTrack) this.setReveal(scrollProgress(currentTrack.getBoundingClientRect().top, currentTrack.offsetHeight, window.innerHeight));
+    });
+  };
+  private readonly updateMotionPreference = (): void => this.updateReveal();
   readonly fileLimit = 100 * 1024 * 1024;
   readonly shareLimit = 500 * 1024 * 1024;
   files: File[] = [];
@@ -107,9 +176,34 @@ class AppComponent {
   refreshToken = sessionStorage.getItem('snapsends3.refresh-token') ?? '';
   authWorking = false;
 
-  constructor(private readonly changeDetector: ChangeDetectorRef) {
+  constructor(private readonly changeDetector: ChangeDetectorRef, private readonly zone: NgZone) {
     void this.finishSignIn();
     if (this.recipientToken) void this.loadRecipientDownload(this.recipientToken);
+  }
+
+  ngAfterViewInit(): void {
+    if (this.viewMode !== 'landing' || !this.landingTrack) return;
+    this.zone.runOutsideAngular(() => {
+      window.addEventListener('scroll', this.updateReveal, { passive: true });
+      window.addEventListener('resize', this.updateReveal);
+      this.reducedMotion.addEventListener('change', this.updateMotionPreference);
+      this.updateReveal();
+    });
+  }
+
+  ngOnDestroy(): void {
+    window.removeEventListener('scroll', this.updateReveal);
+    window.removeEventListener('resize', this.updateReveal);
+    this.reducedMotion.removeEventListener('change', this.updateMotionPreference);
+    if (this.animationFrame) cancelAnimationFrame(this.animationFrame);
+  }
+
+  private setReveal(progress: number): void {
+    const track = this.landingTrack?.nativeElement;
+    if (!track) return;
+    track.style.setProperty('--lid-angle', `${-62 * progress}deg`);
+    track.style.setProperty('--interior-light', String(0.08 + 0.7 * progress));
+    track.style.setProperty('--box-lift', `${-10 * progress}px`);
   }
 
   get totalBytes(): number {

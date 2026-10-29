@@ -4,3 +4,8 @@ export function resolveViewMode(pathname, search) {
   if ((pathname.replace(/\/+$/, '') || '/') === '/upload' || query.has('code')) return 'sender';
   return 'landing';
 }
+
+export function scrollProgress(trackTop, trackHeight, viewportHeight) {
+  const travel = Math.max(trackHeight - viewportHeight, 1);
+  return Math.min(1, Math.max(0, -trackTop / travel));
+}
