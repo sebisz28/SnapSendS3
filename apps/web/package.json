@@ -4,7 +4,7 @@
   "scripts": {
     "start": "ng serve",
     "build": "ng build",
-    "test": "ng test --watch=false"
+    "test": "node --test"
   },
   "dependencies": {
     "@angular/common": "^19.1.0",
