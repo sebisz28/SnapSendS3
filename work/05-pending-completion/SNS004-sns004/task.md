@@ -2,7 +2,7 @@
 [metadata]
 task_id = "SNS004"
 title   = "sns004"
-status  = "04-implementing"
+status  = "05-pending-completion"
 
 [sources]
 epic      = ""
@@ -19,7 +19,7 @@ documents = [
 
 [links]
 blocks  = []
-related = ["../SNS001-epic-formation-for-snapsends3-external-document-sh/task.md"]
+related = ["../../04-implementing/SNS001-epic-formation-for-snapsends3-external-document-sh/task.md"]
 parent  = []
 child   = []
 
@@ -83,7 +83,7 @@ The current interface feels visually poor and needs a polished, modern refresh. 
 ### Related Tasks
 
 - **Blocks**: None identified.
-- **Related**: [SNS001 — Epic formation for SnapSendS3 external document sharing](../SNS001-epic-formation-for-snapsends3-external-document-sh/task.md).
+- **Related**: [SNS001 — Epic formation for SnapSendS3 external document sharing](../../04-implementing/SNS001-epic-formation-for-snapsends3-external-document-sh/task.md).
 
 ## Constraints & Dependencies
 
