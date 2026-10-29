@@ -2,21 +2,21 @@
 
 ## High-Level Strategy
 
-Keep the work in the existing Angular 19 client. Add a dedicated public landing experience at `/`, keep the existing sender workspace and sign-in entry at `/upload`, and continue rendering recipient shares when a `share` query parameter is present on either the legacy root URL or the new upload URL. Keep the existing OIDC code intact and ensure callback query parameters still reach its current completion logic.
+Keep the work in the existing Angular 19 client. Add a dedicated public landing experience at `/`, keep the sender workspace at `/upload`, and continue rendering recipient shares when a `share` query parameter is present on either the legacy root URL or the upload URL. The signed-out landing CTA starts the existing OIDC authorization-code + PKCE flow directly with `/upload` as its redirect URI; a signed-in user goes directly to `/upload`. Theme the existing Keycloak login UI without adding app-side credential handling or changing callback/token logic.
 
 Render the box with HTML/CSS faces and CSS 3D transforms, with a warm, restrained interior glow. Use a sticky scene within a longer landing-page scroll region. Derive one normalized progress value from the scene's scroll position, update it at most once per animation frame, and apply it to lid rotation, interior light, and subtle elevation. Keep the content and CTA in normal document flow after the scene. For reduced-motion users, show a static/fade state and avoid scroll-driven movement.
 
 ## Architecture Decisions
 
 ### Route and entry-point compatibility
-- **Choice**: Use small path/query-based view selection in the current root component, without adding Angular Router. `/` without share/auth callback parameters renders the new landing page; `/upload` renders the existing sender workspace; `?share=...` takes precedence and renders the current recipient view regardless of pathname. The CTA navigates to `/upload`.
+- **Choice**: Use small path/query-based view selection in the current root component, without adding Angular Router. `/` without share/auth callback parameters renders the landing page; `/upload` renders the sender workspace; `?share=...` takes precedence and renders the recipient view regardless of pathname. The landing CTA starts sign-in with `/upload` as callback, or navigates directly there for an existing session.
 - **Rationale**: The app is currently a single standalone component with no Router dependency. Caddy's SPA fallback serves `index.html` for unknown paths. The explicit upload path gives the CTA a separate destination while retaining previously issued root share links.
 - **Alternatives considered**: Add Angular Router (unnecessary runtime dependency and route migration); replace the current root with the box page without route dispatch (would break sender/sign-in and recipient share links).
 
-### Authentication behavior
-- **Choice**: Reuse existing sender workspace and `signIn()` / `finishSignIn()` behavior unchanged. Keep redirect URI as the current pathname; initiate and complete sign-in at `/upload`.
-- **Rationale**: Meets the navigation request without introducing an authentication flow or altering PKCE/session behavior.
-- **Alternatives considered**: Add a login screen/route (explicitly out of scope); make the CTA start OIDC directly (would change current interaction behavior).
+### Authentication behavior and login presentation
+- **Choice**: Reuse `signIn()` / `finishSignIn()` and existing PKCE/state/token behavior. Allow the landing CTA to request only the internal `/upload` callback. Extend Keycloak 26's `keycloak.v2` theme with CSS; keep Keycloak's inherited login/recovery forms and validation.
+- **Rationale**: The actual credential page is hosted by Keycloak. This sends signed-out users directly to the real login form and returns them to upload without creating a parallel auth surface.
+- **Alternatives considered**: Keep the intermediate `/upload` sign-in button (extra step); build an app-owned login form (duplicates the identity boundary); replace Keycloak templates (more upgrade and accessibility risk than CSS theme inheritance).
 
 ### Scroll animation
 - **Choice**: Use sticky positioning and a passive scroll listener scheduled through `requestAnimationFrame` to update a CSS custom progress value on the landing scene. Clamp progress to [0, 1]. Do not route scroll frames through Angular template state or change detection.
@@ -29,14 +29,14 @@ Render the box with HTML/CSS faces and CSS 3D transforms, with a warm, restraine
 - **Alternatives considered**: External image/asset (adds asset sourcing and scaling constraints); WebGL/3D framework (disproportionate runtime and accessibility complexity).
 
 ### Reduced motion and accessibility
-- **Choice**: Detect `prefers-reduced-motion` with `matchMedia`, render a static/opened or short fade presentation, and skip scroll-driven transform updates. Keep the CTA in the document flow after the scene. Use semantic headings, a real link for route navigation, visible keyboard focus, contrast-safe foregrounds, and decorative aria-hidden artwork.
+- **Choice**: Detect `prefers-reduced-motion` with `matchMedia`, render a static/opened or short fade presentation, and skip scroll-driven transform updates. Keep the CTA in the document flow after the scene. Use a semantic button to start OIDC, visible keyboard focus, contrast-safe foregrounds, and decorative aria-hidden artwork.
 - **Rationale**: Makes the landing flow usable without motion and keeps navigation independent of animation completion.
 
 ## Component Changes
 
 ### `apps/web/src/main.ts`
 - [ ] Select landing, sender, or recipient content based on `location.pathname` and `share` query value, preserving OAuth callback handling.
-- [ ] Add landing-page semantic content and CTA to `/upload`.
+- [ ] Add landing-page semantic content and CTA that starts sign-in with `/upload` callback.
 - [ ] Connect sticky scene progress to CSS variables without triggering Angular change detection each frame; register/unregister listeners with component lifecycle.
 - [ ] Preserve current file upload, share-link, recipient, token, and OIDC methods.
 
@@ -44,6 +44,9 @@ Render the box with HTML/CSS faces and CSS 3D transforms, with a warm, restraine
 - [ ] Add dark landing-page palette, responsive layout, CSS box geometry, perspective, reveal/light states, and reduced-motion behavior.
 - [ ] Add polished hover, focus-visible, active/pressed, and disabled states for applicable controls.
 - [ ] Ensure the sender and recipient screens retain their existing light theme and remain unchanged.
+
+### `ops/keycloak/themes/snapsends3/login`
+- [ ] Extend Keycloak's `keycloak.v2` theme with responsive dark styling while inheriting its credential, recovery, and error templates.
 
 ### `apps/web/src/index.html`
 - [ ] Update page title/description only if required to identify the new landing experience accessibly and clearly.
@@ -55,13 +58,14 @@ None. No API or persisted state changes.
 ## Integration Points
 
 - Angular client routes by pathname/query in the browser.
-- CTA navigates to `/upload`, served through existing Caddy `try_files {path} /index.html` fallback.
-- Existing sender sign-in continues using the current OIDC provider and pathname-based redirect URI.
+- Signed-out CTA starts the existing Keycloak authorization endpoint with `/upload` as callback; the existing client redirect wildcard permits it.
+- Keycloak renders the `snapsends3` theme. The realm JSON selects it for new imports; existing realms need the documented Admin Console selection because startup import skips existing realms.
+- A successful PKCE callback at `/upload` returns to the sender workspace through Caddy's SPA fallback.
 - Existing recipient URLs `/?share=...` continue to render the recipient experience; newly created shares from `/upload` use `/upload?share=...` and resolve through the same query dispatch.
 
 ## Configuration
 
-No new runtime dependencies or configuration. Use the browser's reduced-motion preference and viewport/scroll APIs.
+No new runtime dependencies. Add a read-only Keycloak theme bind mount and select the theme in realm import settings. Existing realm activation is documented without reimporting realm data.
 
 ## Dev Hints
 

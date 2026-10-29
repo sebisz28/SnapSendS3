@@ -12,13 +12,15 @@
 
 - [ ] Create CSS box faces, 3D perspective, restrained shine, and warm interior glow.
 - [ ] Bind clamped scroll progress to box opening and light with a passive rAF update.
-- [ ] Add the prominent “Upload your files” link to `/upload` and button interaction states.
+- [ ] Start existing PKCE sign-in from the “Upload your files” button with `/upload` as callback; route existing sessions directly to the sender workspace.
 - [ ] Add reduced-motion static/fade behavior and keyboard/focus semantics.
 
-### Phase 3: Integration and polish
+### Phase 3: Keycloak theme, integration, and polish
 
+- [ ] Extend the Keycloak 26 `keycloak.v2` theme with a matching responsive visual style while inheriting all login forms.
+- [ ] Mount the theme read-only and select it for new realm imports; document safe activation for existing realms.
 - [ ] Validate mobile, tablet, desktop, short viewport, zoom, touch, and keyboard use.
-- [ ] Verify existing OIDC sender flow, current upload workspace, old and new recipient share URLs.
+- [ ] Verify direct CTA-to-Keycloak handoff, callback to `/upload`, existing OIDC behavior, upload workspace, and old/new recipient share URLs.
 - [ ] Run Angular production build and complete browser/accessibility walkthrough; capture harness limitation if automated tests remain unavailable.
 
 ## Parallel Work Opportunities
@@ -43,6 +45,7 @@
 - [x] Restrained soft-white and warm-gold interior light: Phase 2.
 - [x] Prominent end-of-experience upload CTA: Phase 2.
 - [x] Navigate to existing login/sign-in entry and preserve auth: Phase 1 and Phase 3.
+- [ ] Apply the same restrained visual language to Keycloak's existing credential page without changing authentication behavior: Phase 3.
 - [x] Hover/pressed/focus feedback: Phase 2.
 - [x] Responsive layout, accessible controls, and reduced-motion behavior: Phase 2 and Phase 3.
 - [x] Preserve sender, recipient, share-link, and OIDC flows: Phases 1 and 3.
@@ -61,7 +64,7 @@
 
 ## Task Tags
 
-- **Complexity**: moderate
+- **Complexity**: moderate (expanded after user clarified direct Keycloak handoff and themed credential page)
 - **Component**: app
 - **Type**: enhancement
 - **Priority**: medium (no urgency supplied)

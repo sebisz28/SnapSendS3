@@ -4,10 +4,10 @@
 
 ### Technical Complexity
 
-- **Analysis Scope**: One web client module and deployment fallback/configuration context.
-- **File Count**: Approximately 2–4 implementation files, plus focused documentation/tests.
-- **Cross-References**: Existing sender workspace, OIDC callback, recipient share query, Caddy SPA fallback, and Keycloak redirect allow-list.
-- **Integration Points**: Browser URL/scroll APIs, existing OIDC provider, existing sender/recipient flows; no API contract changes.
+- **Analysis Scope**: Angular web client, Keycloak login theme, Compose wiring, realm import configuration, and deployment activation guidance.
+- **File Count**: Approximately 7–10 implementation/configuration files, plus tests and documentation.
+- **Cross-References**: Existing sender workspace, OIDC callback and PKCE handling, recipient share query, Caddy SPA fallback, Keycloak theme inheritance, and redirect allow-list.
+- **Integration Points**: Browser scroll APIs, existing OIDC provider and login theme, Compose mount, sender/recipient flows; no API contract changes.
 
 ## Effort Estimation
 
@@ -15,24 +15,25 @@
 
 | Axis | Score (0-3) | Rationale |
 |------|------------|----------|
-| Scope / Surface Area | 1 | Changes are limited to the Angular web client and a small amount of route/deployment verification. |
-| Coupling / Interfaces | 1 | Adds internal route/query dispatch while preserving existing public URL and auth contracts. |
-| Novelty / Uncertainty | 1 | CSS 3D and scroll-linked progress are established browser patterns; responsive motion tuning is new to this app. |
-| Dependencies | 1 | No blocking dependency; Keycloak callback allow-list requires environment verification. |
-| Testing & Verification | 2 | Current app lacks a configured Angular test target, and route/auth/mobile/reduced-motion behavior requires browser-level validation. |
-| Risk / Blast Radius | 1 | Root entry changes, but query/path dispatch can preserve existing flows and rollback is limited to the web client. |
+| Scope / Surface Area | 2 | Changes span the Angular client, Keycloak theme, Compose mount, and realm import configuration. |
+| Coupling / Interfaces | 2 | The CTA uses the existing OIDC callback; theme availability depends on Keycloak deployment and realm configuration. |
+| Novelty / Uncertainty | 2 | Adds scroll-linked artwork and a Keycloak 26 theme while preserving provider forms and auth behavior. |
+| Dependencies | 1 | No new runtime package; Keycloak 26 image and existing callback allow-list are already present. |
+| Testing & Verification | 2 | Node unit coverage plus manual Keycloak/viewport/accessibility checks are needed; no browser E2E runner exists. |
+| Risk / Blast Radius | 2 | Login presentation changes affect all realm sign-in pages, while inherited forms and unchanged OIDC logic limit behavioral risk. |
 
-### Total Complexity Score: 7/18
+### Total Complexity Score: 11/18
 
 ### Size Estimate
 
-- **Shirt Size**: S
-- **Time Estimate**: 3–5 days
+- **Shirt Size**: M
+- **Time Estimate**: 4–6 days
 - **Confidence**: Medium; visual refinement and current test-harness gap can affect effort.
 
 ## Dependencies and Risk Factors
 
 - No blocking task or backend dependency identified.
-- Verify `/upload` is permitted as an OIDC redirect URI in the configured Keycloak client.
+- Verify `/upload` remains permitted as an OIDC redirect URI in the configured Keycloak client.
+- Existing realms skip startup import; the login theme must be selected in Realm Settings without re-importing user data.
 - Validate legacy and new recipient URL paths before accepting the route change.
 - `npm test` is not currently wired to an Angular test target; browser walkthrough is required unless a harness is added.

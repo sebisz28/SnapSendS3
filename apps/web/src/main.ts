@@ -2,7 +2,7 @@ import 'zone.js';
 import { bootstrapApplication } from '@angular/platform-browser';
 import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, NgZone, OnDestroy, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { resolveViewMode, scrollProgress } from './landing-state.mjs';
+import { resolveViewMode, scrollProgress, signInRedirectUri } from './landing-state.mjs';
 
 type ShareResponse = { id: string; token: string; expiresAt: string; status: string; storageWarning?: string };
 type UploadIntent = { uploadUrl: string };
@@ -80,7 +80,7 @@ type DownloadResponse = { downloadUrl: string; expiresAt: string };
             <p class="landing-eyebrow">READY WHEN YOU ARE</p>
             <h2 id="upload-cta-title">Your files, thoughtfully delivered.</h2>
             <p>Choose your files and create a secure link in moments.</p>
-            <a class="upload-cta" href="/upload">Upload your files <span aria-hidden="true">→</span></a>
+            <button class="upload-cta" type="button" (click)="beginUpload()" [disabled]="authWorking">{{ authWorking ? 'Opening secure sign in…' : 'Upload your files' }} <span aria-hidden="true">→</span></button>
           </div>
         </section>
       } @else {
@@ -319,7 +319,15 @@ class AppComponent implements AfterViewInit, OnDestroy {
     location.assign(location.pathname);
   }
 
-  async signIn(): Promise<void> {
+  beginUpload(): void {
+    if (this.accessToken) {
+      location.assign('/upload');
+      return;
+    }
+    void this.signIn('/upload');
+  }
+
+  async signIn(requestedPath = location.pathname): Promise<void> {
     this.authWorking = true;
     const verifier = this.randomValue();
     const state = this.randomValue();
@@ -327,7 +335,7 @@ class AppComponent implements AfterViewInit, OnDestroy {
     sessionStorage.setItem('snapsends3.oauth-state', state);
     const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(verifier));
     const challenge = this.base64Url(new Uint8Array(digest));
-    const parameters = new URLSearchParams({ client_id: this.clientId, response_type: 'code', redirect_uri: location.origin + location.pathname, scope: 'openid', state, code_challenge: challenge, code_challenge_method: 'S256' });
+    const parameters = new URLSearchParams({ client_id: this.clientId, response_type: 'code', redirect_uri: signInRedirectUri(location.origin, location.pathname, requestedPath), scope: 'openid', state, code_challenge: challenge, code_challenge_method: 'S256' });
     location.assign(`${this.issuer}/protocol/openid-connect/auth?${parameters}`);
   }
 
