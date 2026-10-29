@@ -12,22 +12,24 @@
 
 The landing page's **Upload your files** action now starts the existing authorization-code + PKCE sign-in directly. Its callback is the same-origin `/upload` route, which returns the signed-in user to the existing sender workspace. Users with an active token continue directly to `/upload`. Recipient URL precedence and existing OIDC validation/token handling remain intact.
 
+The `/upload` sender workspace now uses a colorful responsive layout with soft gradient light, translucent cards, refined form styling, and decorative file-delivery artwork. Its existing file picker, optional password, sign-in state, upload action, and share-link controls are preserved.
+
 Added a SnapSendS3 Keycloak 26 login theme extending `keycloak.v2`. It uses a charcoal backdrop, restrained blue controls, warm focus highlights, refined spacing, and responsive/reduced-motion styles while inheriting Keycloak's sign-in and recovery templates. The theme is mounted read-only and selected for fresh realm imports. Existing realms skip startup imports; `ops/keycloak/README.md` documents safe activation through Realm Settings → Themes without overwriting realm data.
 
-The previously merged landing experience remains in place: a responsive scroll-driven white-and-blue box reveal with subtle warm light, reduced-motion handling, and accessible CTA styling.
+The box artwork now keeps its blue ribbon on the exterior only. The white and warm-gold interior glow is clipped to the box opening so it does not spill across the faces. The previously merged landing experience retains its responsive scroll-driven reveal, reduced-motion handling, and accessible CTA styling.
 
 ## Changed Files
 
 - `apps/web/src/main.ts`, `apps/web/src/landing-state.mjs`, and `apps/web/src/landing-state.d.mts` — direct upload sign-in callback handling.
-- `apps/web/src/styles.css` — CTA loading, hover, pressed, and disabled feedback.
-- `apps/web/test/landing-state.test.mjs` and `apps/web/test/keycloak-theme.test.mjs` — callback and Keycloak wiring coverage.
+- `apps/web/src/styles.css` — colorful responsive sender workspace, CTA loading, and interaction states.
+- `apps/web/test/landing-state.test.mjs`, `apps/web/test/keycloak-theme.test.mjs`, `apps/web/test/box-artwork.test.mjs`, and `apps/web/test/sender-workspace.test.mjs` — callback, Keycloak wiring, artwork, and sender layout coverage.
 - `ops/keycloak/themes/snapsends3/login/` — custom Keycloak theme and styles.
 - `ops/keycloak/snapsends3-realm.json`, `compose.yaml`, and `ops/keycloak/README.md` — fresh import selection, read-only theme mount, and existing-realm activation steps.
 - SNS004 task and planning notes — clarified direct-login behavior, updated implementation inventory, integration evidence, and this summary.
 
 ## Validation
 
-- `npm test` — passed, 4 tests.
+- `npm test` — passed, 6 tests.
 - `npm run build` — passed; Angular production bundle generated.
 - `docker compose config --quiet` — passed.
 - `git diff --check` — passed.

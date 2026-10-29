@@ -10,6 +10,8 @@
 - [x] Compute a midpoint scroll progress value correctly.
 - [x] Build a same-origin `/upload` OIDC redirect URI for the landing CTA.
 - [x] Verify Keycloak realm theme selection, parent theme, stylesheet registration, selectors, and read-only Compose mount.
+- [x] Keep the box interior light within the opening and remove the blue ribbon from the opening and lid.
+- [x] Verify `/upload` sender layout adds the scoped visual shell, hero, decorative artwork, upload card, and preserves the native file input.
 
 ## Browser / Integration Checks
 
